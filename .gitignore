@@ -1,0 +1,25 @@
+# Credenciais e configuracao local
+.env
+
+# Build / dist
+dist/
+build/
+*.spec
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Logs e saidas geradas
+logs/
+output/
+
+# Arquivos temporarios de profiling
+importtime_*.txt
+
+# IDEs
+.vscode/
+.idea/

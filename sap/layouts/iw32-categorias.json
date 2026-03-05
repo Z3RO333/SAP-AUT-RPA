@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "transaction": "IW32-CATEGORIAS",
+  "defaultProfile": "standard",
+  "profiles": {
+    "standard": {
+      "tabs": {
+        "costTab": []
+      },
+      "categories": {
+        "GERADOR": {
+          "description": "Custo de gerador",
+          "fieldCandidates": [],
+          "tabCandidates": [],
+          "serviceNumber": "3000465"
+        },
+        "REFRIGERACAO": {
+          "description": "Custo de refrigeracao",
+          "fieldCandidates": [],
+          "tabCandidates": [],
+          "serviceNumber": "3000465"
+        },
+        "ESCADA ROLANTE": {
+          "description": "Custo de escada rolante",
+          "fieldCandidates": [],
+          "tabCandidates": [],
+          "serviceNumber": "3000465"
+        },
+        "AR CONDICIONADO": {
+          "description": "Custo de ar condicionado",
+          "fieldCandidates": [],
+          "tabCandidates": [],
+          "serviceNumber": "3000465"
+        },
+        "ELEVADOR": {
+          "description": "Custo de elevador",
+          "fieldCandidates": [],
+          "tabCandidates": [],
+          "serviceNumber": "3000465"
+        }
+      }
+    }
+  }
+}

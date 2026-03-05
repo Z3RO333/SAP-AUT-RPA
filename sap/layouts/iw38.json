@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "transaction": "IW38",
+  "defaultProfile": "standard",
+  "profiles": {
+    "standard": {
+      "fields": {
+        "workCenter": [
+          "wnd[0]/usr/ctxtGEWRK-LOW"
+        ],
+        "dateFrom": [
+          "wnd[0]/usr/ctxtDATUV"
+        ],
+        "dateTo": [
+          "wnd[0]/usr/ctxtDATUB"
+        ]
+      },
+      "toolbar": {
+        "execute": [
+          "wnd[0]/tbar[1]/btn[8]"
+        ]
+      }
+    }
+  }
+}

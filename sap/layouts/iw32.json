@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "transaction": "IW32",
+  "defaultProfile": "standard",
+  "profiles": {
+    "standard": {
+      "defaults": {
+        "serviceNumber": "3000465"
+      },
+      "order": {
+        "orderFields": [
+          "wnd[0]/usr/ctxtCAUFVD-AUFNR",
+          "wnd[0]/usr/ctxtAUFNR"
+        ],
+        "popupOrderFields": [
+          "wnd[1]/usr/ctxtCAUFVD-AUFNR",
+          "wnd[1]/usr/ctxtAUFNR"
+        ],
+        "otherOrderButtons": [
+          "wnd[0]/tbar[1]/btn[17]",
+          "wnd[0]/tbar[1]/btn[16]"
+        ]
+      },
+      "tabs": {
+        "cukTab": [
+          "wnd[0]/usr/subSUB_ALL:SAPLCOIH:3001/ssubSUB_LEVEL:SAPLCOIH:1100/tabsTS_1100/tabp+CUK"
+        ]
+      },
+      "fields": {
+        "serviceNumber": [
+          "wnd[0]/usr/subSUB_ALL:SAPLCOIH:3001/ssubSUB_LEVEL:SAPLCOIH:1100/tabsTS_1100/tabp+CUK/ssubSUB_AUFTRAG:SAPLCOIH:1180/subCUSTSCR1:SAPLXWOC:0900/ctxtLT_CAUFVD-ZZASNUM"
+        ],
+        "motivoText": [
+          "wnd[0]/usr/subSUB_ALL:SAPLCOIH:3001/ssubSUB_LEVEL:SAPLCOIH:1100/tabsTS_1100/tabp+CUK/ssubSUB_AUFTRAG:SAPLCOIH:1180/subCUSTSCR1:SAPLXWOC:0900/cntlCAUFVD_TXT_EXEC/shellcont/shell"
+        ],
+        "matricula": [
+          "wnd[0]/usr/subSUB_ALL:SAPLCOIH:3001/ssubSUB_LEVEL:SAPLCOIH:1100/tabsTS_1100/tabp+CUK/ssubSUB_AUFTRAG:SAPLCOIH:1180/subCUSTSCR1:SAPLXWOC:0900/ctxtLT_CAUFVD-ZZPERNR"
+        ],
+        "nota": [
+          "wnd[0]/usr/subSUB_ALL:SAPLCOIH:3001/ssubSUB_LEVEL:SAPLCOIH:1100/tabsTS_1100/tabp+CUK/ssubSUB_AUFTRAG:SAPLCOIH:1180/subCUSTSCR1:SAPLXWOC:0900/cmbLT_CAUFVD-ZZAVEX"
+        ]
+      },
+      "buttons": {
+        "release": [
+          "wnd[0]/tbar[1]/btn[25]"
+        ],
+        "cancel": [
+          "wnd[0]/usr/subSUB_ALL:SAPLCOIH:3001/ssubSUB_LEVEL:SAPLCOIH:1100/tabsTS_1100/tabp+CUK/ssubSUB_AUFTRAG:SAPLCOIH:1180/subCUSTSCR1:SAPLXWOC:0900/btnCANC"
+        ],
+        "exec": [
+          "wnd[0]/usr/subSUB_ALL:SAPLCOIH:3001/ssubSUB_LEVEL:SAPLCOIH:1100/tabsTS_1100/tabp+CUK/ssubSUB_AUFTRAG:SAPLCOIH:1180/subCUSTSCR1:SAPLXWOC:0900/btnEXEC"
+        ],
+        "avex": [
+          "wnd[0]/usr/subSUB_ALL:SAPLCOIH:3001/ssubSUB_LEVEL:SAPLCOIH:1100/tabsTS_1100/tabp+CUK/ssubSUB_AUFTRAG:SAPLCOIH:1180/subCUSTSCR1:SAPLXWOC:0900/btnAVEX"
+        ],
+        "conc": [
+          "wnd[0]/usr/subSUB_ALL:SAPLCOIH:3001/ssubSUB_LEVEL:SAPLCOIH:1100/tabsTS_1100/tabp+CUK/ssubSUB_AUFTRAG:SAPLCOIH:1180/subCUSTSCR1:SAPLXWOC:0900/btnCONC"
+        ],
+        "save": [
+          "wnd[0]/tbar[0]/btn[11]"
+        ]
+      }
+    }
+  }
+}

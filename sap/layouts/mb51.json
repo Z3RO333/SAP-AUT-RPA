@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "transaction": "MB51",
+  "defaultProfile": "standard",
+  "profiles": {
+    "standard": {
+      "fields": {
+        "centro": [
+          "wnd[0]/usr/ctxtWERKS-LOW"
+        ],
+        "fornecedor": [
+          "wnd[0]/usr/ctxtLIFNR-LOW"
+        ],
+        "tipoMovimento": [
+          "wnd[0]/usr/ctxtBWART-LOW"
+        ],
+        "dateFrom": [
+          "wnd[0]/usr/ctxtBUDAT-LOW"
+        ],
+        "dateTo": [
+          "wnd[0]/usr/ctxtBUDAT-HIGH"
+        ]
+      },
+      "buttons": {
+        "listDisplay": [
+          "wnd[0]/usr/radRFLAT_L"
+        ]
+      },
+      "toolbar": {
+        "execute": [
+          "wnd[0]/tbar[1]/btn[8]"
+        ]
+      }
+    }
+  }
+}

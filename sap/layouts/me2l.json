@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "transaction": "ME2L",
+  "defaultProfile": "standard",
+  "profiles": {
+    "standard": {
+      "fields": {
+        "fornecedor": [
+          "wnd[0]/usr/ctxtEL_LIFNR-LOW"
+        ],
+        "layout": [
+          "wnd[0]/usr/ctxtLISTU"
+        ],
+        "dateFrom": [
+          "wnd[0]/usr/ctxtS_EINDT-LOW"
+        ],
+        "dateTo": [
+          "wnd[0]/usr/ctxtS_EINDT-HIGH"
+        ]
+      },
+      "toolbar": {
+        "execute": [
+          "wnd[0]/tbar[1]/btn[8]"
+        ]
+      }
+    }
+  }
+}
