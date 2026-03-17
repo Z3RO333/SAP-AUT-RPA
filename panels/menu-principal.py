@@ -1,5 +1,5 @@
 import os
-import shutil
+import runpy
 import subprocess
 import sys
 import tkinter as tk
@@ -8,6 +8,7 @@ from tkinter import messagebox, ttk
 
 
 PANELS_DIR = Path(__file__).resolve().parent
+PANEL_RUN_ARG = "--panel"
 
 APPS = [
     {
@@ -81,6 +82,12 @@ APPS = [
         "subtitle": "Criacao de Pedido de Compra",
         "description": "Valida Excel, inspeciona a tela e executa a criacao de pedido na ME21N.",
         "panel": "me21n-panel.py",
+    },
+    {
+        "title": "IW38 \u2192 ME21N",
+        "subtitle": "Criar Pedido por Ordens IW38",
+        "description": "Cola ordens, executa IW38, seleciona tudo e abre a criacao de pedido ME21N.",
+        "panel": "iw38-me21n-panel.py",
     },
 ]
 
@@ -160,25 +167,18 @@ class MenuPrincipal:
         tk.Label(inner, text=app["description"], bg="#ffffff", fg="#6b7280", font=("Segoe UI", 8), anchor="w", wraplength=220, justify="left").pack(fill="x")
 
         panel_path = PANELS_DIR / app["panel"]
+        runtime_panel_path, _runtime_env = self._resolve_panel_and_env(panel_path)
         btn = ttk.Button(inner, text="Abrir", style="Open.TButton", command=lambda p=panel_path: self._open(p))
         btn.pack(anchor="w", pady=(10, 0))
 
-        if not panel_path.exists():
+        if not runtime_panel_path.exists():
             btn.config(state="disabled")
             tk.Label(inner, text="painel nao encontrado", bg="#ffffff", fg="#dc2626", font=("Segoe UI", 7)).pack(anchor="w")
 
     def _python_executable(self) -> str | None:
-        """Retorna o executavel Python para rodar os paineis.
-        Em modo script usa sys.executable. Em modo frozen (exe compilado)
-        busca o Python instalado no sistema via PATH.
-        """
-        if not getattr(sys, "frozen", False):
+        if getattr(sys, "frozen", False):
             return sys.executable
-        for candidate in ("pythonw.exe", "python.exe", "pythonw", "python"):
-            found = shutil.which(candidate)
-            if found:
-                return found
-        return None
+        return sys.executable
 
     def _resolve_panel_and_env(self, panel_path: Path) -> tuple[Path, dict]:
         """Retorna (caminho_real_do_painel, variaveis_de_ambiente) para o subprocess."""
@@ -197,16 +197,20 @@ class MenuPrincipal:
     def _open(self, panel_path: Path) -> None:
         python = self._python_executable()
         if python is None:
-            messagebox.showerror(
-                "Python nao encontrado",
-                "Instale Python 3 e adicione ao PATH para abrir os paineis.",
-            )
+            messagebox.showerror("Falha ao abrir", "Nao foi possivel localizar o executavel do launcher.")
             return
         actual_path, env = self._resolve_panel_and_env(panel_path)
+        if not actual_path.exists():
+            messagebox.showerror("Falha ao abrir", f"Painel nao encontrado: {actual_path}")
+            return
+        if getattr(sys, "frozen", False):
+            command = [python, PANEL_RUN_ARG, panel_path.name]
+        else:
+            command = [python, str(Path(__file__).resolve()), PANEL_RUN_ARG, panel_path.name]
         try:
             process = subprocess.Popen(
-                [python, str(actual_path)],
-                cwd=str(actual_path.parent),
+                command,
+                cwd=str(Path(sys.executable).parent if getattr(sys, "frozen", False) else Path(__file__).resolve().parent),
                 env=env or None,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
@@ -235,7 +239,39 @@ class MenuPrincipal:
         )
 
 
+def _panel_runtime_path(panel_name: str) -> Path:
+    if getattr(sys, "frozen", False):
+        return Path(sys._MEIPASS) / "panels" / panel_name
+    return PANELS_DIR / panel_name
+
+
+def _run_panel(panel_name: str) -> int:
+    panel_path = _panel_runtime_path(panel_name)
+    if not panel_path.exists():
+        raise FileNotFoundError(f"Painel nao encontrado: {panel_path}")
+
+    panel_dir = str(panel_path.parent)
+    if panel_dir not in sys.path:
+        sys.path.insert(0, panel_dir)
+
+    if getattr(sys, "frozen", False):
+        meipass = str(Path(sys._MEIPASS))
+        if meipass not in sys.path:
+            sys.path.insert(0, meipass)
+        os.environ.setdefault("ROBOSSAP_INSTALL_DIR", str(Path(sys.executable).parent))
+
+    runpy.run_path(str(panel_path), run_name="__main__")
+    return 0
+
+
 def main() -> int:
+    if len(sys.argv) >= 3 and sys.argv[1] == PANEL_RUN_ARG:
+        try:
+            return _run_panel(sys.argv[2])
+        except Exception as exc:
+            print(f"Falha ao abrir painel: {exc}", file=sys.stderr)
+            return 1
+
     root = tk.Tk()
     MenuPrincipal(root)
     root.mainloop()

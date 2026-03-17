@@ -9,7 +9,7 @@ from core.common.logging import ExecutionLogger
 from core.common.models import RobotResult, RunArtifact
 from core.common.run_context import RunContext
 from core.common.runtime import ensure_dir, run_output_dir, timestamp_id
-from core.common.sap_actions import press, set_text
+from core.common.sap_actions import press, set_combo_value, set_text
 from core.common.sap_popups import close_popup_ok, dump_popup
 from core.common.sap_session import resolve_session
 from core.common.sap_status import read_statusbar
@@ -26,11 +26,17 @@ def concluir_ordem(session, order: str, matricula: str, nota_key: str, profile: 
     set_text(session, profile.get("fields", {}).get("matricula", []), matricula, context=context)
     nota_field = profile.get("fields", {}).get("nota", [])
     if nota_field:
-        set_text(session, nota_field, nota_key, context=context)
+        set_combo_value(session, nota_field, nota_key, context=context)
     press(session, profile.get("buttons", {}).get("conc", []), context=context)
-    close_popup_ok(session)
+    while close_popup_ok(session):
+        pass
+    status_text, status_type = read_statusbar(session)
+    if status_type == "E":
+        raise RuntimeError(status_text or f"Falha ao concluir a ordem {order}.")
     if profile.get("buttons", {}).get("save"):
         press(session, profile["buttons"]["save"], context=context)
+        while close_popup_ok(session):
+            pass
     status_text, status_type = read_statusbar(session)
     if status_type == "E":
         raise RuntimeError(status_text or f"Falha ao concluir a ordem {order}.")

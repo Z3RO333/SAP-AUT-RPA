@@ -77,7 +77,7 @@ class Me21nPanel:
             value="Pronto. Modo guiado da ME21N para servico com item D e imputacao F ou K."
         )
         self.manual_mode_note = tk.StringVar(
-            value="Use o modo guiado para preencher como na ME21N. Validar e Executar usam todas as linhas salvas. A selecao na grade serve para editar ou excluir linhas. Texto breve da linha e automatico pelo numero do servico. Preco bruto pode ficar em branco quando o layout usa valor automatico. Glossario: Tipo de imposto = codigo de imposto (MWSKZ); F = Ordem (AUFNR); K = Centro de custo (KOSTL)."
+            value="Use o modo guiado para preencher como na ME21N. Validar e Executar usam todas as linhas salvas. A selecao na grade serve para editar ou excluir linhas. Use Ctrl/Shift para selecionar varias linhas e aplicar Valor em lote nas selecionadas. Texto breve da linha e automatico pelo numero do servico. Preco bruto pode ficar em branco quando o layout usa valor automatico. Glossario: Tipo de imposto = codigo de imposto (MWSKZ); F = Ordem (AUFNR); K = Centro de custo (KOSTL)."
         )
         self.reference_label_var = tk.StringVar(value="Ordem (AUFNR)")
 
@@ -127,6 +127,7 @@ class Me21nPanel:
             "preco_bruto": tk.StringVar(),
             "conta_razao": tk.StringVar(),
         }
+        self.bulk_price_var = tk.StringVar()
         self.reference_var = tk.StringVar()
 
         self._build_styles()
@@ -425,12 +426,26 @@ class Me21nPanel:
         ttk.Button(line_actions, text="Nova linha", command=self._new_service_form, style="Subtle.TButton").pack(side="left")
         ttk.Button(
             line_actions,
-            text="Colar em lote",
+            text="Colar servicos",
+            command=self._open_bulk_service_dialog,
+            style="Subtle.TButton",
+        ).pack(side="left", padx=(8, 0))
+        ttk.Button(
+            line_actions,
+            text="Colar referencias",
             command=self._open_bulk_reference_dialog,
             style="Subtle.TButton",
         ).pack(side="left", padx=(8, 0))
         ttk.Button(line_actions, text="Salvar linha", command=self._save_service_line, style="Accent.TButton").pack(side="left", padx=(8, 0))
         ttk.Button(line_actions, text="Excluir linha", command=self._remove_selected_service_line, style="Subtle.TButton").pack(side="left", padx=(8, 0))
+        ttk.Label(line_actions, text="Valor em lote", style="Muted.TLabel").pack(side="left", padx=(12, 4))
+        ttk.Entry(line_actions, textvariable=self.bulk_price_var, width=12).pack(side="left")
+        ttk.Button(
+            line_actions,
+            text="Aplicar nas selecionadas",
+            command=self._apply_bulk_price_to_selected_lines,
+            style="Subtle.TButton",
+        ).pack(side="left", padx=(8, 0))
 
         service_tree_frame = ttk.Frame(service_frame, style="Card.TFrame")
         service_tree_frame.grid(row=3, column=0, sticky="nsew")
@@ -441,6 +456,7 @@ class Me21nPanel:
             columns=("line_ref", "numero_servico", "quantidade", "preco_bruto", "reference", "conta_razao"),
             show="headings",
             height=12,
+            selectmode="extended",
         )
         for column, width, title in (
             ("line_ref", 70, "Linha"),
@@ -656,6 +672,10 @@ class Me21nPanel:
     def _reference_title(self, categoria_classif: str | None = None) -> str:
         return "Centro de custo (KOSTL)" if (categoria_classif or self.item_vars["categoria_classif"].get().strip()) == "K" else "Ordem (AUFNR)"
 
+    def _selected_service_line_refs(self) -> list[str]:
+        refs = [str(value).strip() for value in self.service_tree.selection() if str(value).strip()]
+        return sorted(refs, key=_sort_key)
+
     def _update_reference_ui(self) -> None:
         categoria = self.item_vars["categoria_classif"].get().strip() or "F"
         self.reference_label_var.set(self._reference_title(categoria))
@@ -685,7 +705,12 @@ class Me21nPanel:
             self.item_tree.selection_set(target)
             self.item_tree.focus(target)
 
-    def _refresh_service_tree(self, item: dict | None = None, focus_line_ref: str | None = None) -> None:
+    def _refresh_service_tree(
+        self,
+        item: dict | None = None,
+        focus_line_ref: str | None = None,
+        selected_line_refs: list[str] | None = None,
+    ) -> None:
         for item_id in self.service_tree.get_children():
             self.service_tree.delete(item_id)
         current_item = item or self._selected_item()
@@ -710,10 +735,18 @@ class Me21nPanel:
                     row.get("conta_razao", ""),
                 ),
             )
-        target = focus_line_ref or self.selected_service_line_ref
-        if target and self.service_tree.exists(target):
-            self.service_tree.selection_set(target)
-            self.service_tree.focus(target)
+        selection_targets: list[str] = []
+        if selected_line_refs is not None:
+            selection_targets = [line_ref for line_ref in selected_line_refs if self.service_tree.exists(line_ref)]
+        elif focus_line_ref and self.service_tree.exists(focus_line_ref):
+            selection_targets = [focus_line_ref]
+        elif self.selected_service_line_ref and self.service_tree.exists(self.selected_service_line_ref):
+            selection_targets = [self.selected_service_line_ref]
+
+        if selection_targets:
+            self.service_tree.selection_set(selection_targets)
+            focus_target = focus_line_ref if focus_line_ref and self.service_tree.exists(focus_line_ref) else selection_targets[0]
+            self.service_tree.focus(focus_target)
 
     def _load_item_into_form(self, item: dict) -> None:
         self.item_vars["item_ref"].set(item.get("item_ref", ""))
@@ -881,8 +914,7 @@ class Me21nPanel:
             return False
 
         categoria = current_item.get("categoria_classif", "F")
-        preco_bruto = self.service_vars["preco_bruto"].get().strip() or "0,00"
-        self.service_vars["preco_bruto"].set(preco_bruto)
+        preco_bruto = self.service_vars["preco_bruto"].get().strip()
         row = {
             "line_ref": line_ref,
             "numero_servico": numero_servico,
@@ -935,7 +967,7 @@ class Me21nPanel:
 
         numero_servico = self.service_vars["numero_servico"].get().strip()
         quantidade = self.service_vars["quantidade"].get().strip() or "1"
-        preco_bruto = self.service_vars["preco_bruto"].get().strip() or "0,00"
+        preco_bruto = self.service_vars["preco_bruto"].get().strip()
         conta_razao = self.service_vars["conta_razao"].get().strip() or current_item.get("conta_razao_default", "")
         if not numero_servico:
             messagebox.showwarning("Lote de linhas", "Preencha o campo 'Numero do servico' antes de gerar em lote.")
@@ -1006,21 +1038,124 @@ class Me21nPanel:
         ttk.Button(actions, text="Gerar linhas", command=_apply_bulk, style="Accent.TButton").pack(side="right")
         ttk.Button(actions, text="Cancelar", command=dialog.destroy, style="Subtle.TButton").pack(side="right", padx=(0, 8))
 
+    def _parse_service_lines_paste(self, raw_text: str) -> list[dict]:
+        """Parse texto colado no formato: numero_servico [quantidade] preco_bruto.
+
+        Suporta colunas separadas por tabulacao ou espacos. Exemplos validos:
+            5673821 320
+            5463821 370,00
+            5586930  2  80,00
+        """
+        lines: list[dict] = []
+        for raw_line in raw_text.splitlines():
+            line = raw_line.strip()
+            if not line:
+                continue
+            parts = re.split(r"\t", line)
+            if len(parts) == 1:
+                parts = line.split()
+            parts = [p.strip() for p in parts if p.strip()]
+            if not parts:
+                continue
+            numero_servico = parts[0]
+            quantidade = "1"
+            preco_bruto = ""
+            if len(parts) == 2:
+                preco_bruto = parts[1]
+            elif len(parts) >= 3:
+                quantidade = parts[1]
+                preco_bruto = parts[2]
+            lines.append({"numero_servico": numero_servico, "quantidade": quantidade, "preco_bruto": preco_bruto})
+        return lines
+
+    def _bulk_add_service_lines(self, service_data: list[dict]) -> tuple[int, int]:
+        if not self.selected_item_ref:
+            if not self._save_item(show_feedback=False):
+                return 0, len(service_data)
+        current_item = self._selected_item()
+        if not current_item:
+            return 0, len(service_data)
+
+        conta_razao = self.service_vars["conta_razao"].get().strip() or current_item.get("conta_razao_default", "")
+        reference_value = self.reference_var.get().strip()
+
+        created = 0
+        failed = 0
+        for data in service_data:
+            current_item = self._selected_item() or current_item
+            self.selected_service_line_ref = None
+            self.service_vars["line_ref"].set(self._next_service_line_ref(current_item))
+            self.service_vars["numero_servico"].set(data["numero_servico"])
+            self.service_vars["quantidade"].set(data["quantidade"])
+            self.service_vars["preco_bruto"].set(data["preco_bruto"])
+            self.service_vars["conta_razao"].set(conta_razao)
+            self.reference_var.set(reference_value)
+            if self._save_service_line(show_feedback=False):
+                created += 1
+            else:
+                failed += 1
+        return created, failed
+
+    def _open_bulk_service_dialog(self) -> None:
+        dialog = tk.Toplevel(self.root)
+        dialog.title("Colar linhas de servico")
+        dialog.geometry("560x420")
+        dialog.transient(self.root)
+        dialog.grab_set()
+
+        frame = ttk.Frame(dialog, padding=14)
+        frame.pack(fill="both", expand=True)
+        ttk.Label(frame, text="Cole os servicos — uma linha por servico:", style="Muted.TLabel").pack(anchor="w")
+        ttk.Label(
+            frame,
+            text=(
+                "2 colunas:  numero_servico  preco_bruto\n"
+                "3 colunas:  numero_servico  quantidade  preco_bruto\n"
+                "\n"
+                "Ordem/centro de custo e conta contabil herdam do formulario atual."
+            ),
+            style="Muted.TLabel",
+            justify="left",
+        ).pack(anchor="w", pady=(2, 8))
+
+        text = scrolledtext.ScrolledText(frame, height=12, wrap="none", font=("Consolas", 10))
+        text.pack(fill="both", expand=True)
+        text.focus_set()
+
+        actions = ttk.Frame(frame, style="Card.TFrame")
+        actions.pack(fill="x", pady=(10, 0))
+
+        def _apply() -> None:
+            raw_text = text.get("1.0", tk.END)
+            service_data = self._parse_service_lines_paste(raw_text)
+            if not service_data:
+                messagebox.showwarning("Colar servicos", "Cole ao menos uma linha.", parent=dialog)
+                return
+            created, failed = self._bulk_add_service_lines(service_data)
+            if created <= 0:
+                messagebox.showwarning("Colar servicos", "Nenhuma linha foi criada. Salve ou selecione um item primeiro.", parent=dialog)
+                return
+            self.status_var.set(f"{created} linha(s) de servico criadas. Falhas: {failed}.")
+            dialog.destroy()
+
+        ttk.Button(actions, text="Adicionar linhas", command=_apply, style="Accent.TButton").pack(side="right")
+        ttk.Button(actions, text="Cancelar", command=dialog.destroy, style="Subtle.TButton").pack(side="right", padx=(0, 8))
+
     def _remove_selected_service_line(self) -> None:
         current_item = self._selected_item()
-        if not current_item or not self.selected_service_line_ref:
+        selected_line_refs = self._selected_service_line_refs()
+        if not current_item or not selected_line_refs:
             messagebox.showwarning("Linha de servico", "Selecione uma linha para excluir.")
             return
-        index = self._find_service_index(current_item, self.selected_service_line_ref)
-        if index is None:
-            return
-        removed = current_item["service_lines"].pop(index)
+        line_ref_set = set(selected_line_refs)
+        current_item["service_lines"] = [row for row in current_item.get("service_lines", []) if row.get("line_ref") not in line_ref_set]
         self.selected_service_line_ref = None
         self._refresh_item_tree(focus_item_ref=current_item["item_ref"])
         self._refresh_service_tree(current_item)
         self._new_service_form()
         self._update_execute_button()
-        self.status_var.set(f"Linha {removed.get('line_ref', '')} removida.")
+        label = f"Linha {selected_line_refs[0]} removida." if len(selected_line_refs) == 1 else f"{len(selected_line_refs)} linhas removidas."
+        self.status_var.set(label)
 
     def _update_execute_button(self) -> None:
         total_items = len(self.manual_items)
@@ -1055,8 +1190,15 @@ class Me21nPanel:
 
     def _on_service_selected(self, _event=None) -> None:
         current_item = self._selected_item()
-        selection = self.service_tree.selection()
+        selection = self._selected_service_line_refs()
         if not current_item or not selection:
+            return
+        if len(selection) > 1:
+            if self.selected_service_line_ref not in selection:
+                self.selected_service_line_ref = None
+            self.status_var.set(
+                f"{len(selection)} linha(s) selecionada(s). Use Valor em lote para aplicar preco bruto nas selecionadas."
+            )
             return
         line_ref = selection[0]
         index = self._find_service_index(current_item, line_ref)
@@ -1065,6 +1207,54 @@ class Me21nPanel:
         row = current_item.get("service_lines", [])[index]
         self.selected_service_line_ref = line_ref
         self._load_service_line_into_form(current_item, row)
+
+    def _apply_bulk_price_to_selected_lines(self) -> None:
+        current_item = self._selected_item()
+        if not current_item:
+            messagebox.showwarning("Lote de valor", "Selecione um item antes de aplicar valor em lote.")
+            return
+
+        selected_line_refs = self._selected_service_line_refs()
+        if not selected_line_refs:
+            messagebox.showwarning("Lote de valor", "Selecione ao menos uma linha na grade para aplicar o valor.")
+            return
+
+        bulk_price = self.bulk_price_var.get().strip()
+        if not bulk_price:
+            messagebox.showwarning("Lote de valor", "Informe o campo 'Valor em lote' antes de aplicar.")
+            return
+
+        selected_line_ref_set = set(selected_line_refs)
+        updated_count = 0
+        for row in current_item.get("service_lines", []):
+            line_ref = str(row.get("line_ref", "")).strip()
+            if line_ref in selected_line_ref_set:
+                row["preco_bruto"] = bulk_price
+                updated_count += 1
+
+        if updated_count <= 0:
+            messagebox.showwarning("Lote de valor", "Nenhuma linha selecionada foi encontrada no item atual.")
+            return
+
+        current_item["service_lines"].sort(key=lambda item: _sort_key(item.get("line_ref", "")))
+        if len(selected_line_refs) == 1:
+            self.selected_service_line_ref = selected_line_refs[0]
+            index = self._find_service_index(current_item, self.selected_service_line_ref)
+            if index is not None:
+                row = current_item.get("service_lines", [])[index]
+                self._load_service_line_into_form(current_item, row)
+        elif self.selected_service_line_ref not in selected_line_ref_set:
+            self.selected_service_line_ref = None
+
+        self._refresh_item_tree(focus_item_ref=current_item["item_ref"])
+        self._refresh_service_tree(
+            current_item,
+            focus_line_ref=selected_line_refs[0],
+            selected_line_refs=selected_line_refs,
+        )
+        self.status_var.set(
+            f"Valor {bulk_price} aplicado em {updated_count} linha(s) selecionada(s) do item {current_item.get('item_ref', '')}."
+        )
 
     def _on_item_classification_changed(self, _event=None) -> None:
         categoria = self.item_vars["categoria_classif"].get().strip() or "F"

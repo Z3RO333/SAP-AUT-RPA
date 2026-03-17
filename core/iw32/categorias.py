@@ -11,13 +11,13 @@ from core.common.logging import ExecutionLogger
 from core.common.models import RobotResult, RunArtifact
 from core.common.run_context import RunContext
 from core.common.runtime import ensure_dir, run_output_dir, timestamp_id
-from core.common.sap_actions import press, set_text
+from core.common.sap_actions import first_existing, press, select, send_vkey, set_text
 from core.common.sap_popups import close_popup_ok, dump_popup
 from core.common.sap_session import resolve_session
 from core.common.sap_status import read_statusbar
 from core.common.screenshots import capture_sap_window
 
-from .common import load_iw32_profile, open_order_iw32
+from .common import load_iw32_profile, open_order_iw32, select_cuk_tab
 
 
 def load_categories_profile(profile_name: str | None = None) -> tuple[str, dict]:
@@ -25,7 +25,7 @@ def load_categories_profile(profile_name: str | None = None) -> tuple[str, dict]
     return resolve_profile(layout_map, profile_name)
 
 
-def _normalize_category_name(value: str) -> str:
+def normalize_category_name(value: str) -> str:
     text = unicodedata.normalize("NFKD", str(value or ""))
     text = "".join(ch for ch in text if not unicodedata.combining(ch))
     return " ".join(text.upper().split())
@@ -39,11 +39,23 @@ def category_names(profile_name: str | None = None) -> list[str]:
     return sorted(categories.keys())
 
 
+def configured_category_names(profile_name: str | None = None) -> list[str]:
+    _name, profile = load_categories_profile(profile_name)
+    categories = profile.get("categories", {})
+    if not isinstance(categories, dict):
+        return []
+    configured = []
+    for name, entry in categories.items():
+        if isinstance(entry, dict) and entry.get("fieldCandidates"):
+            configured.append(normalize_category_name(name))
+    return sorted(configured)
+
+
 def _normalize_rows(rows: list[dict]) -> list[dict]:
     normalized = []
     for row in rows:
         ordem = str(row.get("ordem", "")).strip()
-        categoria = _normalize_category_name(row.get("categoria", ""))
+        categoria = normalize_category_name(row.get("categoria", ""))
         valor = str(row.get("valor", "")).strip()
         numero_servico = str(row.get("numero_servico", "")).strip()
         if not ordem and not categoria and not valor:
@@ -63,10 +75,99 @@ def _resolve_category(profile: dict, categoria: str) -> dict:
     categories = profile.get("categories", {})
     if not isinstance(categories, dict):
         raise RuntimeError("Layout IW32-CATEGORIAS sem secao 'categories'.")
-    entry = categories.get(_normalize_category_name(categoria))
+    entry = categories.get(normalize_category_name(categoria))
     if not isinstance(entry, dict):
         raise RuntimeError(f"Categoria sem mapeamento no layout: {categoria}")
     return entry
+
+
+def _fill_optional_service_number(
+    session,
+    *,
+    ordem: str,
+    service_number: str,
+    service_field: list[str],
+    context: RunContext,
+) -> None:
+    if not service_number or not service_field:
+        return
+
+    try:
+        set_text(session, service_field, service_number, context=context)
+    except Exception as exc:
+        message = str(exc)
+        recoverable = (
+            "Nenhum elemento encontrado" in message
+            or "Elemento nao apareceu" in message
+            or "Layout IW32 sem" in message
+            or "The control could not be found by id." in message
+        )
+        if not recoverable:
+            raise
+        context.warn(
+            f"Campo 'Nr. Servico' nao localizado para a ordem {ordem}; seguindo sem preencher. Detalhe: {message}"
+        )
+
+
+def _focus_field(session, field_candidates: list[str], context: RunContext | None = None) -> None:
+    if not field_candidates:
+        return
+    try:
+        element, resolved_id = first_existing(session, field_candidates)
+        if context:
+            context.track_field(context.last_stage or "sap", resolved_id)
+        try:
+            element.SetFocus()
+        except Exception:
+            pass
+    except Exception:
+        return
+
+
+def _ensure_service_line(
+    session,
+    *,
+    ordem: str,
+    service_number: str,
+    service_field: list[str],
+    context: RunContext,
+) -> None:
+    if not service_field:
+        return
+
+    try:
+        element, resolved_id = first_existing(session, service_field)
+        if context:
+            context.track_field(context.last_stage or "sap", resolved_id)
+        try:
+            element.SetFocus()
+        except Exception:
+            pass
+        current_value = str(getattr(element, "Text", "") or "").strip()
+        if current_value or not service_number:
+            return
+    except Exception as exc:
+        message = str(exc)
+        recoverable = (
+            "Nenhum elemento encontrado" in message
+            or "Elemento nao apareceu" in message
+            or "Layout IW32 sem" in message
+            or "The control could not be found by id." in message
+        )
+        if not recoverable:
+            raise
+        context.warn(
+            f"Campo 'Nr. Servico' nao localizado para a ordem {ordem}; seguindo sem preencher. Detalhe: {message}"
+        )
+        return
+
+    _fill_optional_service_number(
+        session,
+        ordem=ordem,
+        service_number=service_number,
+        service_field=service_field,
+        context=context,
+    )
 
 
 def preencher_categoria_ordem(
@@ -80,8 +181,10 @@ def preencher_categoria_ordem(
     context: RunContext,
 ) -> dict:
     category_entry = _resolve_category(categorias_profile, categoria)
+    tab_sequence = category_entry.get("tabSequence", [])
     tab_candidates = category_entry.get("tabCandidates", []) or categorias_profile.get("tabs", {}).get("costTab", [])
     field_candidates = category_entry.get("fieldCandidates", [])
+    confirm_field_candidates = category_entry.get("confirmFieldCandidates", [])
     save_button = iw32_profile.get("buttons", {}).get("save", [])
     service_field = iw32_profile.get("fields", {}).get("serviceNumber", [])
     default_service = str(category_entry.get("serviceNumber", "")).strip()
@@ -90,13 +193,24 @@ def preencher_categoria_ordem(
         raise RuntimeError(f"Categoria '{categoria}' sem fieldCandidates configurado no layout IW32-CATEGORIAS.")
 
     open_order_iw32(session, ordem, iw32_profile, context=context)
-    if tab_candidates:
+    select_cuk_tab(session, iw32_profile, context=context)
+    service_number = numero_servico or default_service
+    _ensure_service_line(
+        session,
+        ordem=ordem,
+        service_number=service_number,
+        service_field=service_field,
+        context=context,
+    )
+    if tab_sequence:
+        for step_candidates in tab_sequence:
+            select(session, step_candidates, context=context)
+    elif tab_candidates:
         press(session, tab_candidates, context=context)
 
-    service_number = numero_servico or default_service
-    if service_number and service_field:
-        set_text(session, service_field, service_number, context=context)
     set_text(session, field_candidates, valor, context=context)
+    send_vkey(session, 0)
+    _focus_field(session, confirm_field_candidates, context=context)
     if save_button:
         press(session, save_button, context=context)
     close_popup_ok(session)

@@ -18,6 +18,12 @@ COLLECT_ALL = [
     "reportlab",
 ]
 
+# Submodulos que precisam ser forçados no bundle para execucao dinamica via runpy.
+COLLECT_SUBMODULES = [
+    "tkinter",
+    "core",
+]
+
 # Imports ocultos que o PyInstaller nao detecta automaticamente
 HIDDEN_IMPORTS = [
     "pythoncom",
@@ -26,6 +32,8 @@ HIDDEN_IMPORTS = [
     "win32api",
     "win32con",
     "pywintypes",
+    "tkinter.filedialog",
+    "tkinter.scrolledtext",
 ]
 
 
@@ -59,6 +67,9 @@ def main() -> int:
 
     for pkg in COLLECT_ALL:
         command += ["--collect-all", pkg]
+
+    for module_name in COLLECT_SUBMODULES:
+        command += ["--collect-submodules", module_name]
 
     for imp in HIDDEN_IMPORTS:
         command += ["--hidden-import", imp]

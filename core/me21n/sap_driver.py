@@ -127,6 +127,35 @@ def _press_existing_buttons(session, candidates: list[str], context: RunContext,
             press(session, candidate, context=context)
 
 
+def _get_service_table_path(profile: dict) -> str | None:
+    candidates = field_candidates(profile, "serviceLines", "serviceNumber")
+    if not candidates:
+        return None
+    template = candidates[0]
+    idx = template.rfind("/tbl")
+    if idx == -1:
+        return None
+    rest = template[idx + 1:]
+    end_idx = rest.find("/")
+    if end_idx == -1:
+        return None
+    return template[: idx + 1] + rest[:end_idx]
+
+
+def _scroll_service_table_to(session, table_path: str, line_index: int) -> int:
+    """Rola o table control para que line_index fique visível. Retorna o índice visual."""
+    try:
+        table = session.findById(table_path)
+        visible_count = int(table.visibleRowCount or 0) or 10
+        first_visible = (line_index // visible_count) * visible_count
+        if int(table.firstVisibleRow) != first_visible:
+            table.firstVisibleRow = first_visible
+            wait_not_busy(session)
+        return line_index - first_visible
+    except Exception:
+        return line_index
+
+
 def _focus_item_row(session, profile: dict, row_index: int) -> None:
     probe_fields = ("shortText", "itemCategory", "accountAssignmentCategory", "materialGroup", "plantOrCenter")
     for logical_name in probe_fields:
@@ -319,14 +348,16 @@ def _fill_service_line_reference(
     profile: dict,
     line_index: int,
     context: RunContext,
+    visual_row: int | None = None,
 ) -> bool:
+    row = visual_row if visual_row is not None else line_index
     details = {"itemRef": item.item_ref, "lineRef": service_line.line_ref, "row": line_index}
     if item.categoria_classif != "F" or not service_line.ordem:
         send_vkey(session, 0)
         _capture_status(context, session, "me21n-line-reference-trigger", details)
         return False
 
-    direct_candidates = _formatted_candidates(profile, "serviceLines", "order", row=line_index)
+    direct_candidates = _formatted_candidates(profile, "serviceLines", "order", row=row)
     direct_existing = _first_existing_candidate(session, direct_candidates)
     if direct_existing:
         _set_text_and_confirm(
@@ -409,13 +440,15 @@ def _handle_account_assignment_popup(
 
 
 def _fill_service_lines(session, item: PurchaseOrderItem, profile: dict, context: RunContext) -> None:
+    table_path = _get_service_table_path(profile)
     total_lines = len(item.service_lines)
     for line_index, service_line in enumerate(item.service_lines):
         context.progress("me21n-service-lines", line_index + 1, total_lines)
-        details = {"itemRef": item.item_ref, "lineRef": service_line.line_ref, "row": line_index}
+        visual_row = _scroll_service_table_to(session, table_path, line_index) if table_path else line_index
+        details = {"itemRef": item.item_ref, "lineRef": service_line.line_ref, "row": line_index, "visualRow": visual_row}
         _set_text_and_confirm(
             session,
-            _formatted_candidates(profile, "serviceLines", "serviceNumber", row=line_index),
+            _formatted_candidates(profile, "serviceLines", "serviceNumber", row=visual_row),
             service_line.numero_servico,
             context,
             "me21n-line-service-number",
@@ -426,7 +459,7 @@ def _fill_service_lines(session, item: PurchaseOrderItem, profile: dict, context
             _send_vkey_to_window(session, "wnd[1]", 0)
         _set_text_and_confirm(
             session,
-            _formatted_candidates(profile, "serviceLines", "quantity", row=line_index),
+            _formatted_candidates(profile, "serviceLines", "quantity", row=visual_row),
             _format_sap_decimal(service_line.quantidade),
             context,
             "me21n-line-quantity",
@@ -435,7 +468,7 @@ def _fill_service_lines(session, item: PurchaseOrderItem, profile: dict, context
         if service_line.preco_bruto is not None:
             _set_text_and_confirm(
                 session,
-                _formatted_candidates(profile, "serviceLines", "grossPrice", row=line_index),
+                _formatted_candidates(profile, "serviceLines", "grossPrice", row=visual_row),
                 _format_sap_decimal(service_line.preco_bruto),
                 context,
                 "me21n-line-gross-price",
@@ -445,7 +478,7 @@ def _fill_service_lines(session, item: PurchaseOrderItem, profile: dict, context
         if service_line.descricao_externa and field_candidates(profile, "serviceLines", "externalText"):
             _set_text_and_confirm(
                 session,
-                _formatted_candidates(profile, "serviceLines", "externalText", row=line_index),
+                _formatted_candidates(profile, "serviceLines", "externalText", row=visual_row),
                 service_line.descricao_externa,
                 context,
                 "me21n-line-text",
@@ -453,7 +486,7 @@ def _fill_service_lines(session, item: PurchaseOrderItem, profile: dict, context
                 confirm=False,
             )
 
-        reference_already_filled = _fill_service_line_reference(session, item, service_line, profile, line_index, context)
+        reference_already_filled = _fill_service_line_reference(session, item, service_line, profile, line_index, context, visual_row=visual_row)
         _handle_account_assignment_popup(session, item, service_line, profile, context, reference_already_filled)
         _capture_status(context, session, "me21n-line-complete", details)
 

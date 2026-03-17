@@ -12,31 +12,71 @@
           "description": "Custo de gerador",
           "fieldCandidates": [],
           "tabCandidates": [],
-          "serviceNumber": "3000465"
+          "serviceNumber": ""
         },
         "REFRIGERACAO": {
           "description": "Custo de refrigeracao",
           "fieldCandidates": [],
           "tabCandidates": [],
-          "serviceNumber": "3000465"
+          "serviceNumber": ""
         },
         "ESCADA ROLANTE": {
           "description": "Custo de escada rolante",
           "fieldCandidates": [],
           "tabCandidates": [],
-          "serviceNumber": "3000465"
+          "serviceNumber": ""
         },
         "AR CONDICIONADO": {
           "description": "Custo de ar condicionado",
           "fieldCandidates": [],
           "tabCandidates": [],
-          "serviceNumber": "3000465"
+          "serviceNumber": ""
         },
         "ELEVADOR": {
           "description": "Custo de elevador",
           "fieldCandidates": [],
           "tabCandidates": [],
-          "serviceNumber": "3000465"
+          "serviceNumber": ""
+        },
+        "SERVICO DE MANUTENCAO": {
+          "description": "Servico de Manutencao (Corretiva) - linha 5 da tabela de custos",
+          "tabSequence": [
+            [
+              "wnd[0]/usr/subSUB_ALL:SAPLCOIH:3001/ssubSUB_LEVEL:SAPLCOIH:1100/tabsTS_1100/tabpKOAU",
+              "wnd[0]/usr/subSUB_ALL:SAPLCOIH:3001/ssubSUB_LEVEL:SAPLCOIH:1107/tabsTS_1100/tabpKOAU"
+            ],
+            [
+              "wnd[0]/usr/subSUB_ALL:SAPLCOIH:3001/ssubSUB_LEVEL:SAPLCOIH:1107/tabsTS_1100/tabpKOAU/ssubSUB_AUFTRAG:SAPLICO1:1100/tabsTABSTRIP/tabpTS10"
+            ]
+          ],
+          "fieldCandidates": [
+            "wnd[0]/usr/subSUB_ALL:SAPLCOIH:3001/ssubSUB_LEVEL:SAPLCOIH:1107/tabsTS_1100/tabpKOAU/ssubSUB_AUFTRAG:SAPLICO1:1100/tabsTABSTRIP/tabpTS10/ssubVALUES:SAPLICO1:1110/tblSAPLICO1TCTRL_1110/txtPMCOEA-SKOSTENKGR[1,4]"
+          ],
+          "confirmFieldCandidates": [
+            "wnd[0]/usr/subSUB_ALL:SAPLCOIH:3001/ssubSUB_LEVEL:SAPLCOIH:1107/tabsTS_1100/tabpKOAU/ssubSUB_AUFTRAG:SAPLICO1:1100/tabsTABSTRIP/tabpTS10/ssubVALUES:SAPLICO1:1110/tblSAPLICO1TCTRL_1110/txtPMCOEA-SKOSTENKGR[1,5]"
+          ],
+          "tabCandidates": [],
+          "serviceNumber": ""
+        },
+        "SERVICO DE MANUTENCAO-CONTRATO": {
+          "description": "Servico de Manutencao-Contrato (Preventiva) - linha 6 da tabela de custos",
+          "tabSequence": [
+            [
+              "wnd[0]/usr/subSUB_ALL:SAPLCOIH:3001/ssubSUB_LEVEL:SAPLCOIH:1100/tabsTS_1100/tabpKOAU",
+              "wnd[0]/usr/subSUB_ALL:SAPLCOIH:3001/ssubSUB_LEVEL:SAPLCOIH:1107/tabsTS_1100/tabpKOAU"
+            ],
+            [
+              "wnd[0]/usr/subSUB_ALL:SAPLCOIH:3001/ssubSUB_LEVEL:SAPLCOIH:1107/tabsTS_1100/tabpKOAU/ssubSUB_AUFTRAG:SAPLICO1:1100/tabsTABSTRIP/tabpTS10"
+            ]
+          ],
+          "fieldCandidates": [
+            "wnd[0]/usr/subSUB_ALL:SAPLCOIH:3001/ssubSUB_LEVEL:SAPLCOIH:1107/tabsTS_1100/tabpKOAU/ssubSUB_AUFTRAG:SAPLICO1:1100/tabsTABSTRIP/tabpTS10/ssubVALUES:SAPLICO1:1110/tblSAPLICO1TCTRL_1110/txtPMCOEA-SKOSTENKGR[1,5]"
+          ],
+          "confirmFieldCandidates": [
+            "wnd[0]/usr/subSUB_ALL:SAPLCOIH:3001/ssubSUB_LEVEL:SAPLCOIH:1107/tabsTS_1100/tabpKOAU/ssubSUB_AUFTRAG:SAPLICO1:1100/tabsTABSTRIP/tabpTS10/ssubVALUES:SAPLICO1:1110/tblSAPLICO1TCTRL_1110/txtPMCOEA-SKOSTENKGR[1,4]"
+          ],
+          "tabCandidates": [],
+          "serviceNumber": ""
         }
       }
     }
