@@ -20,7 +20,7 @@ Aplicativo desktop em `Python + Tkinter + pywin32` para automacoes SAP GUI Scrip
 - `MB51`
 - `ME23N` Alimentacao
 - `ME21N` Criar Pedido
-- Ferramentas offline de `Ordens em Aberto` e `Relatorio Fornecedor`
+- Ferramenta offline de `Ordens em Aberto`
 
 ## Estrutura
 

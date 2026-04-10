@@ -1,0 +1,2247 @@
+{
+  "transaction": "IW38",
+  "windowTitle": "Modificar ordens PM: Lista ordens PRD (1)",
+  "tree": {
+    "id": "/app/con[0]/ses[0]/wnd[0]",
+    "type": "GuiMainWindow",
+    "name": "wnd[0]",
+    "text": "Modificar ordens PM: Lista ordens PRD (1)",
+    "tooltip": "",
+    "childrenCount": 6,
+    "children": [
+      {
+        "id": "/app/con[0]/ses[0]/wnd[0]/mbar",
+        "type": "GuiMenubar",
+        "name": "mbar",
+        "text": "",
+        "tooltip": "",
+        "childrenCount": 8,
+        "children": [
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[0]",
+            "type": "GuiMenu",
+            "name": "Lista",
+            "text": "Lista",
+            "tooltip": "",
+            "childrenCount": 14,
+            "children": [
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[0]/menu[0]",
+                "type": "GuiMenu",
+                "name": "Modificar <-> Exibir",
+                "text": "Modificar <-> Exibir",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[0]/menu[1]",
+                "type": "GuiMenu",
+                "name": "Renovar",
+                "text": "Renovar",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[0]/menu[2]",
+                "type": "GuiMenu",
+                "name": "menu[2]",
+                "text": "",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[0]/menu[3]",
+                "type": "GuiMenu",
+                "name": "Gráfico",
+                "text": "Gráfico",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[0]/menu[4]",
+                "type": "GuiMenu",
+                "name": "Portfólio",
+                "text": "Portfólio",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[0]/menu[5]",
+                "type": "GuiMenu",
+                "name": "Análise ABC",
+                "text": "Análise ABC",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[0]/menu[6]",
+                "type": "GuiMenu",
+                "name": "Planilha eletrônica",
+                "text": "Planilha eletrônica",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[0]/menu[7]",
+                "type": "GuiMenu",
+                "name": "Processamento de texto",
+                "text": "Processamento de texto",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[0]/menu[8]",
+                "type": "GuiMenu",
+                "name": "Imprimir",
+                "text": "Imprimir",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[0]/menu[9]",
+                "type": "GuiMenu",
+                "name": "Acesso",
+                "text": "Acesso",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[0]/menu[10]",
+                "type": "GuiMenu",
+                "name": "menu[10]",
+                "text": "",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[0]/menu[11]",
+                "type": "GuiMenu",
+                "name": "Gravar",
+                "text": "Gravar",
+                "tooltip": "",
+                "childrenCount": 3,
+                "children": [
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[0]/menu[11]/menu[0]",
+                    "type": "GuiMenu",
+                    "name": "Office",
+                    "text": "Office",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[0]/menu[11]/menu[1]",
+                    "type": "GuiMenu",
+                    "name": "Estrutura de relatórios",
+                    "text": "Estrutura de relatórios",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[0]/menu[11]/menu[2]",
+                    "type": "GuiMenu",
+                    "name": "File...",
+                    "text": "File...",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[0]/menu[12]",
+                "type": "GuiMenu",
+                "name": "menu[12]",
+                "text": "",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[0]/menu[13]",
+                "type": "GuiMenu",
+                "name": "Encerrar",
+                "text": "Encerrar",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              }
+            ]
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[1]",
+            "type": "GuiMenu",
+            "name": "Processar",
+            "text": "Processar",
+            "tooltip": "",
+            "childrenCount": 15,
+            "children": [
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[1]/menu[0]",
+                "type": "GuiMenu",
+                "name": "Marcar tudo",
+                "text": "Marcar tudo",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[1]/menu[1]",
+                "type": "GuiMenu",
+                "name": "Desmarcar tudo",
+                "text": "Desmarcar tudo",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[1]/menu[2]",
+                "type": "GuiMenu",
+                "name": "menu[2]",
+                "text": "",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[1]/menu[3]",
+                "type": "GuiMenu",
+                "name": "Definir filtro",
+                "text": "Definir filtro",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[1]/menu[4]",
+                "type": "GuiMenu",
+                "name": "Eliminar filtro",
+                "text": "Eliminar filtro",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[1]/menu[5]",
+                "type": "GuiMenu",
+                "name": "menu[5]",
+                "text": "",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[1]/menu[6]",
+                "type": "GuiMenu",
+                "name": "Ordenação crescente",
+                "text": "Ordenação crescente",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[1]/menu[7]",
+                "type": "GuiMenu",
+                "name": "Ordenar em ordem decrescente",
+                "text": "Ordenar em ordem decrescente",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[1]/menu[8]",
+                "type": "GuiMenu",
+                "name": "menu[8]",
+                "text": "",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[1]/menu[9]",
+                "type": "GuiMenu",
+                "name": "Totalizar valores",
+                "text": "Totalizar valores",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[1]/menu[10]",
+                "type": "GuiMenu",
+                "name": "Subtotal...",
+                "text": "Subtotal...",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[1]/menu[11]",
+                "type": "GuiMenu",
+                "name": "menu[11]",
+                "text": "",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[1]/menu[12]",
+                "type": "GuiMenu",
+                "name": "Procurar",
+                "text": "Procurar",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[1]/menu[13]",
+                "type": "GuiMenu",
+                "name": "menu[13]",
+                "text": "",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[1]/menu[14]",
+                "type": "GuiMenu",
+                "name": "Cancelar",
+                "text": "Cancelar",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              }
+            ]
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[2]",
+            "type": "GuiMenu",
+            "name": "Ir para",
+            "text": "Ir para",
+            "tooltip": "",
+            "childrenCount": 13,
+            "children": [
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[2]/menu[0]",
+                "type": "GuiMenu",
+                "name": "Ordem",
+                "text": "Ordem",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[2]/menu[1]",
+                "type": "GuiMenu",
+                "name": "Texto descritivo",
+                "text": "Texto descritivo",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[2]/menu[2]",
+                "type": "GuiMenu",
+                "name": "Síntese componentes",
+                "text": "Síntese componentes",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[2]/menu[3]",
+                "type": "GuiMenu",
+                "name": "menu[3]",
+                "text": "",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[2]/menu[4]",
+                "type": "GuiMenu",
+                "name": "Lista de operações",
+                "text": "Lista de operações",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[2]/menu[5]",
+                "type": "GuiMenu",
+                "name": "Lista oper.c/seleção",
+                "text": "Lista oper.c/seleção",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[2]/menu[6]",
+                "type": "GuiMenu",
+                "name": "Lista confirmações",
+                "text": "Lista confirmações",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[2]/menu[7]",
+                "type": "GuiMenu",
+                "name": "Lista disponibilidade de materiais",
+                "text": "Lista disponibilidade de materiais",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[2]/menu[8]",
+                "type": "GuiMenu",
+                "name": "Síntese de datas...",
+                "text": "Síntese de datas...",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[2]/menu[9]",
+                "type": "GuiMenu",
+                "name": "Telefonema",
+                "text": "Telefonema",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[2]/menu[10]",
+                "type": "GuiMenu",
+                "name": "menu[10]",
+                "text": "",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[2]/menu[11]",
+                "type": "GuiMenu",
+                "name": "Painel de planejamento",
+                "text": "Painel de planejamento",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[2]/menu[12]",
+                "type": "GuiMenu",
+                "name": "Voltar",
+                "text": "Voltar",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              }
+            ]
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[3]",
+            "type": "GuiMenu",
+            "name": "Ordem",
+            "text": "Ordem",
+            "tooltip": "",
+            "childrenCount": 15,
+            "children": [
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[3]/menu[0]",
+                "type": "GuiMenu",
+                "name": "Liberar ordem",
+                "text": "Liberar ordem",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[3]/menu[1]",
+                "type": "GuiMenu",
+                "name": "Imprimir ordem",
+                "text": "Imprimir ordem",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[3]/menu[2]",
+                "type": "GuiMenu",
+                "name": "Download ordem",
+                "text": "Download ordem",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[3]/menu[3]",
+                "type": "GuiMenu",
+                "name": "Aceitar dtas.projeto",
+                "text": "Aceitar dtas.projeto",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[3]/menu[4]",
+                "type": "GuiMenu",
+                "name": "Confirmação",
+                "text": "Confirmação",
+                "tooltip": "",
+                "childrenCount": 2,
+                "children": [
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[3]/menu[4]/menu[0]",
+                    "type": "GuiMenu",
+                    "name": "Confirmação coletiva",
+                    "text": "Confirmação coletiva",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[3]/menu[4]/menu[1]",
+                    "type": "GuiMenu",
+                    "name": "Confirmação total",
+                    "text": "Confirmação total",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[3]/menu[5]",
+                "type": "GuiMenu",
+                "name": "Criar grupo de ordens",
+                "text": "Criar grupo de ordens",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[3]/menu[6]",
+                "type": "GuiMenu",
+                "name": "menu[6]",
+                "text": "",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[3]/menu[7]",
+                "type": "GuiMenu",
+                "name": "Revisão",
+                "text": "Revisão",
+                "tooltip": "",
+                "childrenCount": 2,
+                "children": [
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[3]/menu[7]/menu[0]",
+                    "type": "GuiMenu",
+                    "name": "Atribuir revisão",
+                    "text": "Atribuir revisão",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[3]/menu[7]/menu[1]",
+                    "type": "GuiMenu",
+                    "name": "Atualizar datas",
+                    "text": "Atualizar datas",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[3]/menu[8]",
+                "type": "GuiMenu",
+                "name": "menu[8]",
+                "text": "",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[3]/menu[9]",
+                "type": "GuiMenu",
+                "name": "Orçamento inicial",
+                "text": "Orçamento inicial",
+                "tooltip": "",
+                "childrenCount": 2,
+                "children": [
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[3]/menu[9]/menu[0]",
+                    "type": "GuiMenu",
+                    "name": "Modificar",
+                    "text": "Modificar",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[3]/menu[9]/menu[1]",
+                    "type": "GuiMenu",
+                    "name": "Exibir",
+                    "text": "Exibir",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[3]/menu[10]",
+                "type": "GuiMenu",
+                "name": "menu[10]",
+                "text": "",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[3]/menu[11]",
+                "type": "GuiMenu",
+                "name": "Encerramento",
+                "text": "Encerramento",
+                "tooltip": "",
+                "childrenCount": 3,
+                "children": [
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[3]/menu[11]/menu[0]",
+                    "type": "GuiMenu",
+                    "name": "Concluir tecnicamente",
+                    "text": "Concluir tecnicamente",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[3]/menu[11]/menu[1]",
+                    "type": "GuiMenu",
+                    "name": "Encerrar comércio",
+                    "text": "Encerrar comércio",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[3]/menu[11]/menu[2]",
+                    "type": "GuiMenu",
+                    "name": "Anular encerramento comercial",
+                    "text": "Anular encerramento comercial",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[3]/menu[12]",
+                "type": "GuiMenu",
+                "name": "menu[12]",
+                "text": "",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[3]/menu[13]",
+                "type": "GuiMenu",
+                "name": "Eliminar ord.histórica",
+                "text": "Eliminar ord.histórica",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[3]/menu[14]",
+                "type": "GuiMenu",
+                "name": "Efetuar modificação em massa",
+                "text": "Efetuar modificação em massa",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              }
+            ]
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[4]",
+            "type": "GuiMenu",
+            "name": "Ambiente",
+            "text": "Ambiente",
+            "tooltip": "",
+            "childrenCount": 10,
+            "children": [
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[4]/menu[0]",
+                "type": "GuiMenu",
+                "name": "Notas",
+                "text": "Notas",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[4]/menu[1]",
+                "type": "GuiMenu",
+                "name": "Locais instalação",
+                "text": "Locais instalação",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[4]/menu[2]",
+                "type": "GuiMenu",
+                "name": "Equipamentos",
+                "text": "Equipamentos",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[4]/menu[3]",
+                "type": "GuiMenu",
+                "name": "Conjuntos PM",
+                "text": "Conjuntos PM",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[4]/menu[4]",
+                "type": "GuiMenu",
+                "name": "Movims.mercad.",
+                "text": "Movims.mercad.",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[4]/menu[5]",
+                "type": "GuiMenu",
+                "name": "menu[5]",
+                "text": "",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[4]/menu[6]",
+                "type": "GuiMenu",
+                "name": "Listas multiníveis",
+                "text": "Listas multiníveis",
+                "tooltip": "",
+                "childrenCount": 4,
+                "children": [
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[4]/menu[6]/menu[0]",
+                    "type": "GuiMenu",
+                    "name": "Locais instalação",
+                    "text": "Locais instalação",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[4]/menu[6]/menu[1]",
+                    "type": "GuiMenu",
+                    "name": "Equipamentos",
+                    "text": "Equipamentos",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[4]/menu[6]/menu[2]",
+                    "type": "GuiMenu",
+                    "name": "Notas",
+                    "text": "Notas",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[4]/menu[6]/menu[3]",
+                    "type": "GuiMenu",
+                    "name": "Ordens",
+                    "text": "Ordens",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[4]/menu[7]",
+                "type": "GuiMenu",
+                "name": "menu[7]",
+                "text": "",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[4]/menu[8]",
+                "type": "GuiMenu",
+                "name": "Detalhe",
+                "text": "Detalhe",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[4]/menu[9]",
+                "type": "GuiMenu",
+                "name": "Geração Automática de Peiddo",
+                "text": "Geração Automática de Peiddo",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              }
+            ]
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[5]",
+            "type": "GuiMenu",
+            "name": "Configurações",
+            "text": "Configurações",
+            "tooltip": "",
+            "childrenCount": 14,
+            "children": [
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[5]/menu[0]",
+                "type": "GuiMenu",
+                "name": "Lista básica",
+                "text": "Lista básica",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[5]/menu[1]",
+                "type": "GuiMenu",
+                "name": "menu[1]",
+                "text": "",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[5]/menu[2]",
+                "type": "GuiMenu",
+                "name": "Variantes de exibição",
+                "text": "Variantes de exibição",
+                "tooltip": "",
+                "childrenCount": 6,
+                "children": [
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[5]/menu[2]/menu[0]",
+                    "type": "GuiMenu",
+                    "name": "Atuais...",
+                    "text": "Atuais...",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[5]/menu[2]/menu[1]",
+                    "type": "GuiMenu",
+                    "name": "Chamar...",
+                    "text": "Chamar...",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[5]/menu[2]/menu[2]",
+                    "type": "GuiMenu",
+                    "name": "menu[2]",
+                    "text": "",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[5]/menu[2]/menu[3]",
+                    "type": "GuiMenu",
+                    "name": "Gravar como variante",
+                    "text": "Gravar como variante",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[5]/menu[2]/menu[4]",
+                    "type": "GuiMenu",
+                    "name": "menu[4]",
+                    "text": "",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[5]/menu[2]/menu[5]",
+                    "type": "GuiMenu",
+                    "name": "Administração...",
+                    "text": "Administração...",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[5]/menu[3]",
+                "type": "GuiMenu",
+                "name": "menu[3]",
+                "text": "",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[5]/menu[4]",
+                "type": "GuiMenu",
+                "name": "Variante de seleção",
+                "text": "Variante de seleção",
+                "tooltip": "",
+                "childrenCount": 1,
+                "children": [
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[5]/menu[4]/menu[0]",
+                    "type": "GuiMenu",
+                    "name": "Definir",
+                    "text": "Definir",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[5]/menu[5]",
+                "type": "GuiMenu",
+                "name": "menu[5]",
+                "text": "",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[5]/menu[6]",
+                "type": "GuiMenu",
+                "name": "Níveis de totalização",
+                "text": "Níveis de totalização",
+                "tooltip": "",
+                "childrenCount": 2,
+                "children": [
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[5]/menu[6]/menu[0]",
+                    "type": "GuiMenu",
+                    "name": "Selecionar...",
+                    "text": "Selecionar...",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[5]/menu[6]/menu[1]",
+                    "type": "GuiMenu",
+                    "name": "Determinar lista expandida...",
+                    "text": "Determinar lista expandida...",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[5]/menu[7]",
+                "type": "GuiMenu",
+                "name": "menu[7]",
+                "text": "",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[5]/menu[8]",
+                "type": "GuiMenu",
+                "name": "Colunas",
+                "text": "Colunas",
+                "tooltip": "",
+                "childrenCount": 4,
+                "children": [
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[5]/menu[8]/menu[0]",
+                    "type": "GuiMenu",
+                    "name": "Otimizar largura",
+                    "text": "Otimizar largura",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[5]/menu[8]/menu[1]",
+                    "type": "GuiMenu",
+                    "name": "menu[1]",
+                    "text": "",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[5]/menu[8]/menu[2]",
+                    "type": "GuiMenu",
+                    "name": "Fixar até coluna",
+                    "text": "Fixar até coluna",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[5]/menu[8]/menu[3]",
+                    "type": "GuiMenu",
+                    "name": "Anular fixação",
+                    "text": "Anular fixação",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[5]/menu[9]",
+                "type": "GuiMenu",
+                "name": "menu[9]",
+                "text": "",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[5]/menu[10]",
+                "type": "GuiMenu",
+                "name": "Seleções...",
+                "text": "Seleções...",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[5]/menu[11]",
+                "type": "GuiMenu",
+                "name": "Status da lista...",
+                "text": "Status da lista...",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[5]/menu[12]",
+                "type": "GuiMenu",
+                "name": "menu[12]",
+                "text": "",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[5]/menu[13]",
+                "type": "GuiMenu",
+                "name": "Monitor on/off",
+                "text": "Monitor on/off",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              }
+            ]
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]",
+            "type": "GuiMenu",
+            "name": "Sistema",
+            "text": "Sistema",
+            "tooltip": "",
+            "childrenCount": 13,
+            "children": [
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[0]",
+                "type": "GuiMenu",
+                "name": "Janela GUI nova",
+                "text": "Janela GUI nova",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[1]",
+                "type": "GuiMenu",
+                "name": "Fechar janela GUI",
+                "text": "Fechar janela GUI",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[2]",
+                "type": "GuiMenu",
+                "name": "Especificações do usuário",
+                "text": "Especificações do usuário",
+                "tooltip": "",
+                "childrenCount": 5,
+                "children": [
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[2]/menu[0]",
+                    "type": "GuiMenu",
+                    "name": "Manter dados",
+                    "text": "Manter dados",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[2]/menu[1]",
+                    "type": "GuiMenu",
+                    "name": "Definir dados",
+                    "text": "Definir dados",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[2]/menu[2]",
+                    "type": "GuiMenu",
+                    "name": "Eliminar dados",
+                    "text": "Eliminar dados",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[2]/menu[3]",
+                    "type": "GuiMenu",
+                    "name": "Dados próprios",
+                    "text": "Dados próprios",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[2]/menu[4]",
+                    "type": "GuiMenu",
+                    "name": "Ampliar favoritos",
+                    "text": "Ampliar favoritos",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[3]",
+                "type": "GuiMenu",
+                "name": "Serviços",
+                "text": "Serviços",
+                "tooltip": "",
+                "childrenCount": 10,
+                "children": [
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[3]/menu[0]",
+                    "type": "GuiMenu",
+                    "name": "Reporting",
+                    "text": "Reporting",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[3]/menu[1]",
+                    "type": "GuiMenu",
+                    "name": "QuickViewer",
+                    "text": "QuickViewer",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[3]/menu[2]",
+                    "type": "GuiMenu",
+                    "name": "Controle de saída",
+                    "text": "Controle de saída",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[3]/menu[3]",
+                    "type": "GuiMenu",
+                    "name": "Atualização de tabela",
+                    "text": "Atualização de tabela",
+                    "tooltip": "",
+                    "childrenCount": 2,
+                    "children": [
+                      {
+                        "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[3]/menu[3]/menu[0]",
+                        "type": "GuiMenu",
+                        "name": "Atualização ampliada de tabelas",
+                        "text": "Atualização ampliada de tabelas",
+                        "tooltip": "",
+                        "childrenCount": 0,
+                        "children": []
+                      },
+                      {
+                        "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[3]/menu[3]/menu[1]",
+                        "type": "GuiMenu",
+                        "name": "Atualização do cluster de visões",
+                        "text": "Atualização do cluster de visões",
+                        "tooltip": "",
+                        "childrenCount": 0,
+                        "children": []
+                      }
+                    ]
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[3]/menu[4]",
+                    "type": "GuiMenu",
+                    "name": "Batch input",
+                    "text": "Batch input",
+                    "tooltip": "",
+                    "childrenCount": 11,
+                    "children": [
+                      {
+                        "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[3]/menu[4]/menu[0]",
+                        "type": "GuiMenu",
+                        "name": "Pastas",
+                        "text": "Pastas",
+                        "tooltip": "",
+                        "childrenCount": 0,
+                        "children": []
+                      },
+                      {
+                        "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[3]/menu[4]/menu[1]",
+                        "type": "GuiMenu",
+                        "name": "Logs",
+                        "text": "Logs",
+                        "tooltip": "",
+                        "childrenCount": 0,
+                        "children": []
+                      },
+                      {
+                        "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[3]/menu[4]/menu[2]",
+                        "type": "GuiMenu",
+                        "name": "Recorder",
+                        "text": "Recorder",
+                        "tooltip": "",
+                        "childrenCount": 0,
+                        "children": []
+                      },
+                      {
+                        "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[3]/menu[4]/menu[3]",
+                        "type": "GuiMenu",
+                        "name": "Reiniciar transação",
+                        "text": "Reiniciar transação",
+                        "tooltip": "",
+                        "childrenCount": 0,
+                        "children": []
+                      },
+                      {
+                        "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[3]/menu[4]/menu[4]",
+                        "type": "GuiMenu",
+                        "name": "Eliminar transação",
+                        "text": "Eliminar transação",
+                        "tooltip": "",
+                        "childrenCount": 0,
+                        "children": []
+                      },
+                      {
+                        "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[3]/menu[4]/menu[5]",
+                        "type": "GuiMenu",
+                        "name": "Transação seguinte",
+                        "text": "Transação seguinte",
+                        "tooltip": "",
+                        "childrenCount": 0,
+                        "children": []
+                      },
+                      {
+                        "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[3]/menu[4]/menu[6]",
+                        "type": "GuiMenu",
+                        "name": "Processamento visível",
+                        "text": "Processamento visível",
+                        "tooltip": "",
+                        "childrenCount": 0,
+                        "children": []
+                      },
+                      {
+                        "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[3]/menu[4]/menu[7]",
+                        "type": "GuiMenu",
+                        "name": "Exibir somente erros",
+                        "text": "Exibir somente erros",
+                        "tooltip": "",
+                        "childrenCount": 0,
+                        "children": []
+                      },
+                      {
+                        "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[3]/menu[4]/menu[8]",
+                        "type": "GuiMenu",
+                        "name": "Modo especialista ON",
+                        "text": "Modo especialista ON",
+                        "tooltip": "",
+                        "childrenCount": 0,
+                        "children": []
+                      },
+                      {
+                        "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[3]/menu[4]/menu[9]",
+                        "type": "GuiMenu",
+                        "name": "Modo especial.OFF",
+                        "text": "Modo especial.OFF",
+                        "tooltip": "",
+                        "childrenCount": 0,
+                        "children": []
+                      },
+                      {
+                        "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[3]/menu[4]/menu[10]",
+                        "type": "GuiMenu",
+                        "name": "Cancelar",
+                        "text": "Cancelar",
+                        "tooltip": "",
+                        "childrenCount": 0,
+                        "children": []
+                      }
+                    ]
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[3]/menu[5]",
+                    "type": "GuiMenu",
+                    "name": "Entr.ráp.",
+                    "text": "Entr.ráp.",
+                    "tooltip": "",
+                    "childrenCount": 4,
+                    "children": [
+                      {
+                        "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[3]/menu[5]/menu[0]",
+                        "type": "GuiMenu",
+                        "name": "Recorder",
+                        "text": "Recorder",
+                        "tooltip": "",
+                        "childrenCount": 0,
+                        "children": []
+                      },
+                      {
+                        "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[3]/menu[5]/menu[1]",
+                        "type": "GuiMenu",
+                        "name": "Processamento visível",
+                        "text": "Processamento visível",
+                        "tooltip": "",
+                        "childrenCount": 0,
+                        "children": []
+                      },
+                      {
+                        "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[3]/menu[5]/menu[2]",
+                        "type": "GuiMenu",
+                        "name": "Exibir somente erros",
+                        "text": "Exibir somente erros",
+                        "tooltip": "",
+                        "childrenCount": 0,
+                        "children": []
+                      },
+                      {
+                        "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[3]/menu[5]/menu[3]",
+                        "type": "GuiMenu",
+                        "name": "Cancelar",
+                        "text": "Cancelar",
+                        "tooltip": "",
+                        "childrenCount": 0,
+                        "children": []
+                      }
+                    ]
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[3]/menu[6]",
+                    "type": "GuiMenu",
+                    "name": "Direct input",
+                    "text": "Direct input",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[3]/menu[7]",
+                    "type": "GuiMenu",
+                    "name": "Jobs",
+                    "text": "Jobs",
+                    "tooltip": "",
+                    "childrenCount": 2,
+                    "children": [
+                      {
+                        "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[3]/menu[7]/menu[0]",
+                        "type": "GuiMenu",
+                        "name": "Definição do job",
+                        "text": "Definição do job",
+                        "tooltip": "",
+                        "childrenCount": 0,
+                        "children": []
+                      },
+                      {
+                        "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[3]/menu[7]/menu[1]",
+                        "type": "GuiMenu",
+                        "name": "Síntese de jobs",
+                        "text": "Síntese de jobs",
+                        "tooltip": "",
+                        "childrenCount": 0,
+                        "children": []
+                      }
+                    ]
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[3]/menu[8]",
+                    "type": "GuiMenu",
+                    "name": "Fila",
+                    "text": "Fila",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[3]/menu[9]",
+                    "type": "GuiMenu",
+                    "name": "SAP Service",
+                    "text": "SAP Service",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[4]",
+                "type": "GuiMenu",
+                "name": "Utilitários",
+                "text": "Utilitários",
+                "tooltip": "",
+                "childrenCount": 10,
+                "children": [
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[4]/menu[0]",
+                    "type": "GuiMenu",
+                    "name": "Depuração tela",
+                    "text": "Depuração tela",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[4]/menu[1]",
+                    "type": "GuiMenu",
+                    "name": "Depuração ABAP",
+                    "text": "Depuração ABAP",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[4]/menu[2]",
+                    "type": "GuiMenu",
+                    "name": "Depuração sistema",
+                    "text": "Depuração sistema",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[4]/menu[3]",
+                    "type": "GuiMenu",
+                    "name": "Consumo de recursos",
+                    "text": "Consumo de recursos",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[4]/menu[4]",
+                    "type": "GuiMenu",
+                    "name": "Fila automática processamento síncrono",
+                    "text": "Fila automática processamento síncrono",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[4]/menu[5]",
+                    "type": "GuiMenu",
+                    "name": "Rastreamento de performance",
+                    "text": "Rastreamento de performance",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[4]/menu[6]",
+                    "type": "GuiMenu",
+                    "name": "Trace contexto",
+                    "text": "Trace contexto",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[4]/menu[7]",
+                    "type": "GuiMenu",
+                    "name": "Análise de tempo de execução",
+                    "text": "Análise de tempo de execução",
+                    "tooltip": "",
+                    "childrenCount": 3,
+                    "children": [
+                      {
+                        "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[4]/menu[7]/menu[0]",
+                        "type": "GuiMenu",
+                        "name": "Executar",
+                        "text": "Executar",
+                        "tooltip": "",
+                        "childrenCount": 0,
+                        "children": []
+                      },
+                      {
+                        "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[4]/menu[7]/menu[1]",
+                        "type": "GuiMenu",
+                        "name": "Ativar",
+                        "text": "Ativar",
+                        "tooltip": "",
+                        "childrenCount": 0,
+                        "children": []
+                      },
+                      {
+                        "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[4]/menu[7]/menu[2]",
+                        "type": "GuiMenu",
+                        "name": "Desativar",
+                        "text": "Desativar",
+                        "tooltip": "",
+                        "childrenCount": 0,
+                        "children": []
+                      }
+                    ]
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[4]/menu[8]",
+                    "type": "GuiMenu",
+                    "name": "Exib.verif.autoriz.",
+                    "text": "Exib.verif.autoriz.",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[4]/menu[9]",
+                    "type": "GuiMenu",
+                    "name": "Análise da memória",
+                    "text": "Análise da memória",
+                    "tooltip": "",
+                    "childrenCount": 2,
+                    "children": [
+                      {
+                        "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[4]/menu[9]/menu[0]",
+                        "type": "GuiMenu",
+                        "name": "Gerar instantâneo da memória",
+                        "text": "Gerar instantâneo da memória",
+                        "tooltip": "",
+                        "childrenCount": 0,
+                        "children": []
+                      },
+                      {
+                        "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[4]/menu[9]/menu[1]",
+                        "type": "GuiMenu",
+                        "name": "Comparar instantâneos da memória",
+                        "text": "Comparar instantâneos da memória",
+                        "tooltip": "",
+                        "childrenCount": 0,
+                        "children": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[5]",
+                "type": "GuiMenu",
+                "name": "Lista",
+                "text": "Lista",
+                "tooltip": "",
+                "childrenCount": 5,
+                "children": [
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[5]/menu[0]",
+                    "type": "GuiMenu",
+                    "name": "Imprimir",
+                    "text": "Imprimir",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[5]/menu[1]",
+                    "type": "GuiMenu",
+                    "name": "Procurar por...",
+                    "text": "Procurar por...",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[5]/menu[2]",
+                    "type": "GuiMenu",
+                    "name": "Gravar",
+                    "text": "Gravar",
+                    "tooltip": "",
+                    "childrenCount": 3,
+                    "children": [
+                      {
+                        "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[5]/menu[2]/menu[0]",
+                        "type": "GuiMenu",
+                        "name": "Arquivo SAPoffice",
+                        "text": "Arquivo SAPoffice",
+                        "tooltip": "",
+                        "childrenCount": 0,
+                        "children": []
+                      },
+                      {
+                        "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[5]/menu[2]/menu[1]",
+                        "type": "GuiMenu",
+                        "name": "Lista",
+                        "text": "Lista",
+                        "tooltip": "",
+                        "childrenCount": 0,
+                        "children": []
+                      },
+                      {
+                        "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[5]/menu[2]/menu[2]",
+                        "type": "GuiMenu",
+                        "name": "File local",
+                        "text": "File local",
+                        "tooltip": "",
+                        "childrenCount": 0,
+                        "children": []
+                      }
+                    ]
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[5]/menu[3]",
+                    "type": "GuiMenu",
+                    "name": "Enviar",
+                    "text": "Enviar",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[5]/menu[4]",
+                    "type": "GuiMenu",
+                    "name": "Título da lista",
+                    "text": "Título da lista",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[6]",
+                "type": "GuiMenu",
+                "name": "Serviços para objeto",
+                "text": "Serviços para objeto",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[7]",
+                "type": "GuiMenu",
+                "name": "Meus objetos",
+                "text": "Meus objetos",
+                "tooltip": "",
+                "childrenCount": 2,
+                "children": [
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[7]/menu[0]",
+                    "type": "GuiMenu",
+                    "name": "Histórico de objetos",
+                    "text": "Histórico de objetos",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  },
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[7]/menu[1]",
+                    "type": "GuiMenu",
+                    "name": "Processar objetos",
+                    "text": "Processar objetos",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[8]",
+                "type": "GuiMenu",
+                "name": "Ordens spool próprias",
+                "text": "Ordens spool próprias",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[9]",
+                "type": "GuiMenu",
+                "name": "Jobs próprios",
+                "text": "Jobs próprios",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[10]",
+                "type": "GuiMenu",
+                "name": "Mensagem breve",
+                "text": "Mensagem breve",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[11]",
+                "type": "GuiMenu",
+                "name": "Status...",
+                "text": "Status...",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[6]/menu[12]",
+                "type": "GuiMenu",
+                "name": "Efetuar logoff",
+                "text": "Efetuar logoff",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              }
+            ]
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[7]",
+            "type": "GuiMenu",
+            "name": "Ajuda",
+            "text": "Ajuda",
+            "tooltip": "",
+            "childrenCount": 9,
+            "children": [
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[7]/menu[0]",
+                "type": "GuiMenu",
+                "name": "Ajuda para aplicação",
+                "text": "Ajuda para aplicação",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[7]/menu[1]",
+                "type": "GuiMenu",
+                "name": "Biblioteca SAP",
+                "text": "Biblioteca SAP",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[7]/menu[2]",
+                "type": "GuiMenu",
+                "name": "Glossário",
+                "text": "Glossário",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[7]/menu[3]",
+                "type": "GuiMenu",
+                "name": "Infos de release",
+                "text": "Infos de release",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[7]/menu[4]",
+                "type": "GuiMenu",
+                "name": "menu[4]",
+                "text": "",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[7]/menu[5]",
+                "type": "GuiMenu",
+                "name": "SAP Support Portal",
+                "text": "SAP Support Portal",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[7]/menu[6]",
+                "type": "GuiMenu",
+                "name": "Entrar mensagem do Service Desk",
+                "text": "Entrar mensagem do Service Desk",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[7]/menu[7]",
+                "type": "GuiMenu",
+                "name": "menu[7]",
+                "text": "",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              },
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/mbar/menu[7]/menu[8]",
+                "type": "GuiMenu",
+                "name": "Configurações...",
+                "text": "Configurações...",
+                "tooltip": "",
+                "childrenCount": 0,
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "/app/con[0]/ses[0]/wnd[0]/tbar[0]",
+        "type": "GuiToolbar",
+        "name": "tbar[0]",
+        "text": "",
+        "tooltip": "",
+        "childrenCount": 10,
+        "children": [
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/tbar[0]/btn[0]",
+            "type": "GuiButton",
+            "name": "btn[0]",
+            "text": "",
+            "tooltip": "Continuar   (Enter)",
+            "childrenCount": 0,
+            "children": []
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/tbar[0]/btn[3]",
+            "type": "GuiButton",
+            "name": "btn[3]",
+            "text": "Voltar",
+            "tooltip": "Voltar   (F3)",
+            "childrenCount": 0,
+            "children": []
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/tbar[0]/btn[15]",
+            "type": "GuiButton",
+            "name": "btn[15]",
+            "text": "Encerrar",
+            "tooltip": "Encerrar   (Shift+F3)",
+            "childrenCount": 0,
+            "children": []
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/tbar[0]/btn[12]",
+            "type": "GuiButton",
+            "name": "btn[12]",
+            "text": "Cancelar",
+            "tooltip": "Cancelar   (F12)",
+            "childrenCount": 0,
+            "children": []
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/tbar[0]/btn[86]",
+            "type": "GuiButton",
+            "name": "btn[86]",
+            "text": "",
+            "tooltip": "Imprimir   (Ctrl+P)",
+            "childrenCount": 0,
+            "children": []
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/tbar[0]/btn[71]",
+            "type": "GuiButton",
+            "name": "btn[71]",
+            "text": "",
+            "tooltip": "Procurar   (Ctrl+F)",
+            "childrenCount": 0,
+            "children": []
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/tbar[0]/btn[419]",
+            "type": "GuiButton",
+            "name": "btn[419]",
+            "text": "",
+            "tooltip": "Janela GUI nova",
+            "childrenCount": 0,
+            "children": []
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/tbar[0]/btn[418]",
+            "type": "GuiButton",
+            "name": "btn[418]",
+            "text": "",
+            "tooltip": "Cria uma ligação",
+            "childrenCount": 0,
+            "children": []
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/tbar[0]/btn[446]",
+            "type": "GuiButton",
+            "name": "btn[446]",
+            "text": "",
+            "tooltip": "Configurações e ações SAP GUI (Ctrl+Alt+F12)",
+            "childrenCount": 0,
+            "children": []
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/tbar[0]/okcd",
+            "type": "GuiOkCodeField",
+            "name": "okcd",
+            "text": "",
+            "tooltip": "",
+            "childrenCount": 0,
+            "children": []
+          }
+        ]
+      },
+      {
+        "id": "/app/con[0]/ses[0]/wnd[0]/titl",
+        "type": "GuiTitlebar",
+        "name": "titl",
+        "text": "Modificar ordens PM: Lista ordens",
+        "tooltip": "",
+        "childrenCount": 0,
+        "children": []
+      },
+      {
+        "id": "/app/con[0]/ses[0]/wnd[0]/tbar[1]",
+        "type": "GuiToolbar",
+        "name": "tbar[1]",
+        "text": "",
+        "tooltip": "",
+        "childrenCount": 19,
+        "children": [
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/tbar[1]/btn[37]",
+            "type": "GuiButton",
+            "name": "btn[37]",
+            "text": "",
+            "tooltip": "Detalhe   (Ctrl+Shift+F1)",
+            "childrenCount": 0,
+            "children": []
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/tbar[1]/btn[17]",
+            "type": "GuiButton",
+            "name": "btn[17]",
+            "text": "",
+            "tooltip": "Modificar <-> Exibir   (Shift+F5)",
+            "childrenCount": 0,
+            "children": []
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/tbar[1]/btn[8]",
+            "type": "GuiButton",
+            "name": "btn[8]",
+            "text": "",
+            "tooltip": "Atualizar   (F8)",
+            "childrenCount": 0,
+            "children": []
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/tbar[1]/btn[5]",
+            "type": "GuiButton",
+            "name": "btn[5]",
+            "text": "",
+            "tooltip": "Marcar tudo   (F5)",
+            "childrenCount": 0,
+            "children": []
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/tbar[1]/btn[6]",
+            "type": "GuiButton",
+            "name": "btn[6]",
+            "text": "",
+            "tooltip": "Desmarcar tudo   (F6)",
+            "childrenCount": 0,
+            "children": []
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/tbar[1]/btn[41]",
+            "type": "GuiButton",
+            "name": "btn[41]",
+            "text": "",
+            "tooltip": "Ordenação crescente   (Ctrl+Shift+F5)",
+            "childrenCount": 0,
+            "children": []
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/tbar[1]/btn[40]",
+            "type": "GuiButton",
+            "name": "btn[40]",
+            "text": "",
+            "tooltip": "Ordenar em ordem decrescente   (Ctrl+Shift+F4)",
+            "childrenCount": 0,
+            "children": []
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/tbar[1]/btn[38]",
+            "type": "GuiButton",
+            "name": "btn[38]",
+            "text": "",
+            "tooltip": "Definir filtro   (Ctrl+Shift+F2)",
+            "childrenCount": 0,
+            "children": []
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/tbar[1]/btn[14]",
+            "type": "GuiButton",
+            "name": "btn[14]",
+            "text": "",
+            "tooltip": "Gráfico   (Shift+F2)",
+            "childrenCount": 0,
+            "children": []
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/tbar[1]/btn[16]",
+            "type": "GuiButton",
+            "name": "btn[16]",
+            "text": "",
+            "tooltip": "Planilha eletrônica   (Shift+F4)",
+            "childrenCount": 0,
+            "children": []
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/tbar[1]/btn[42]",
+            "type": "GuiButton",
+            "name": "btn[42]",
+            "text": "Ordem",
+            "tooltip": "Ordem   (Ctrl+Shift+F6)",
+            "childrenCount": 0,
+            "children": []
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/tbar[1]/btn[18]",
+            "type": "GuiButton",
+            "name": "btn[18]",
+            "text": "",
+            "tooltip": "Texto descritivo   (Shift+F6)",
+            "childrenCount": 0,
+            "children": []
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/tbar[1]/btn[44]",
+            "type": "GuiButton",
+            "name": "btn[44]",
+            "text": "",
+            "tooltip": "Liberar ordem   (Ctrl+Shift+F8)",
+            "childrenCount": 0,
+            "children": []
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/tbar[1]/btn[45]",
+            "type": "GuiButton",
+            "name": "btn[45]",
+            "text": "",
+            "tooltip": "Concluir tecnicamente   (Ctrl+Shift+F9)",
+            "childrenCount": 0,
+            "children": []
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/tbar[1]/btn[43]",
+            "type": "GuiButton",
+            "name": "btn[43]",
+            "text": "Operações",
+            "tooltip": "Lista de operações   (Ctrl+Shift+F7)",
+            "childrenCount": 0,
+            "children": []
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/tbar[1]/btn[19]",
+            "type": "GuiButton",
+            "name": "btn[19]",
+            "text": "",
+            "tooltip": "Totalizar valores   (Shift+F7)",
+            "childrenCount": 0,
+            "children": []
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/tbar[1]/btn[25]",
+            "type": "GuiButton",
+            "name": "btn[25]",
+            "text": "Subtotal",
+            "tooltip": "Subtotal...   (Ctrl+F1)",
+            "childrenCount": 0,
+            "children": []
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/tbar[1]/btn[32]",
+            "type": "GuiButton",
+            "name": "btn[32]",
+            "text": "",
+            "tooltip": "Atuais...   (Ctrl+F8)",
+            "childrenCount": 0,
+            "children": []
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/tbar[1]/btn[31]",
+            "type": "GuiButton",
+            "name": "btn[31]",
+            "text": "Painel Pedido",
+            "tooltip": "Geração Automática de Peiddo   (Ctrl+F7)",
+            "childrenCount": 0,
+            "children": []
+          }
+        ]
+      },
+      {
+        "id": "/app/con[0]/ses[0]/wnd[0]/usr",
+        "type": "GuiUserArea",
+        "name": "usr",
+        "text": "",
+        "tooltip": "",
+        "childrenCount": 1,
+        "children": [
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/usr/cntlGRID1",
+            "type": "GuiCustomControl",
+            "name": "GRID1",
+            "text": "",
+            "tooltip": "",
+            "childrenCount": 1,
+            "children": [
+              {
+                "id": "/app/con[0]/ses[0]/wnd[0]/usr/cntlGRID1/shellcont",
+                "type": "GuiContainerShell",
+                "name": "shellcont",
+                "text": "SAPGUI.CONTAINERCTRL.1",
+                "tooltip": "",
+                "childrenCount": 1,
+                "children": [
+                  {
+                    "id": "/app/con[0]/ses[0]/wnd[0]/usr/cntlGRID1/shellcont/shell",
+                    "type": "GuiShell",
+                    "name": "shell",
+                    "text": "SAPGUI.GridViewCtrl.1",
+                    "tooltip": "",
+                    "childrenCount": 0,
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "/app/con[0]/ses[0]/wnd[0]/sbar",
+        "type": "GuiStatusbar",
+        "name": "sbar",
+        "text": "",
+        "tooltip": "",
+        "childrenCount": 7,
+        "children": [
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/sbar/pane[0]",
+            "type": "GuiStatusPane",
+            "name": "pane[0]",
+            "text": "",
+            "tooltip": "",
+            "childrenCount": 0,
+            "children": []
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/sbar/pane[1]",
+            "type": "GuiStatusPane",
+            "name": "pane[1]",
+            "text": "PRD (1) 400",
+            "tooltip": "",
+            "childrenCount": 0,
+            "children": []
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/sbar/pane[2]",
+            "type": "GuiStatusPane",
+            "name": "pane[2]",
+            "text": "",
+            "tooltip": "",
+            "childrenCount": 0,
+            "children": []
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/sbar/pane[3]",
+            "type": "GuiStatusPane",
+            "name": "pane[3]",
+            "text": "OVR",
+            "tooltip": "",
+            "childrenCount": 0,
+            "children": []
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/sbar/pane[4]",
+            "type": "GuiStatusPane",
+            "name": "pane[4]",
+            "text": "                    ",
+            "tooltip": "SAP GUI Scripting: o script está em execução",
+            "childrenCount": 0,
+            "children": []
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/sbar/pane[5]",
+            "type": "GuiStatusPane",
+            "name": "pane[5]",
+            "text": " SERVER ",
+            "tooltip": "",
+            "childrenCount": 0,
+            "children": []
+          },
+          {
+            "id": "/app/con[0]/ses[0]/wnd[0]/sbar/pane[6]",
+            "type": "GuiStatusPane",
+            "name": "pane[6]",
+            "text": "KANA",
+            "tooltip": "Secure Network Communication ativada",
+            "childrenCount": 0,
+            "children": []
+          }
+        ]
+      }
+    ]
+  }
+}

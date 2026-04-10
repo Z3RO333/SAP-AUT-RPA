@@ -12,6 +12,7 @@ from core.common.models import RobotResult, RunArtifact
 from core.common.run_context import RunContext
 from core.common.runtime import ensure_dir, run_output_dir, timestamp_id
 from core.common.sap_actions import first_existing, press, select, send_vkey, set_text
+from core.common.sap_wait import wait
 from core.common.sap_popups import close_popup_ok, dump_popup
 from core.common.sap_session import resolve_session
 from core.common.sap_status import read_statusbar
@@ -208,6 +209,7 @@ def preencher_categoria_ordem(
     elif tab_candidates:
         press(session, tab_candidates, context=context)
 
+    wait(0.5)  # aguarda tabela SAP renderizar apos navegacao de abas
     set_text(session, field_candidates, valor, context=context)
     send_vkey(session, 0)
     _focus_field(session, confirm_field_candidates, context=context)

@@ -1,0 +1,29 @@
+{
+  "transaction": "ZME62",
+  "defaultProfile": "standard",
+  "profiles": {
+    "standard": {
+      "fields": {
+        "fornecedor": ["wnd[0]/usr/ctxtGV_FORNECEDOR"],
+        "ano": ["wnd[0]/usr/txtGV_ANO"]
+      },
+      "buttons": {
+        "executar": ["wnd[0]/tbar[1]/btn[2]"],
+        "salvar": ["wnd[0]/tbar[0]/btn[11]"],
+        "comentario": ["wnd[0]/tbar[1]/btn[5]"],
+        "salvarComentario": ["wnd[1]/tbar[0]/btn[11]"]
+      },
+      "grid": {
+        "container": ["wnd[0]/usr/cntlGC_CONTAINER_AVALIACAO/shellcont/shell"],
+        "responseColumn": "VALOR_OBTIDO"
+      },
+      "commentField": ["wnd[1]/usr/cntlCC_TEXTO_COMENTARIO/shellcont/shell"],
+      "allowedResponses": [
+        "SIM",
+        "SIM, MELHORES CONDIÇÕES",
+        "NAO",
+        "TALVEZ"
+      ]
+    }
+  }
+}

@@ -66,12 +66,6 @@ APPS = [
         "panel": "ordens-aberto-panel.py",
     },
     {
-        "title": "Relatorio Fornecedor",
-        "subtitle": "Relatorio Consolidado",
-        "description": "Filtra planilha consolidada local e gera relatorio.",
-        "panel": "relatorio-fornecedor-panel.py",
-    },
-    {
         "title": "ME23N - Alimentacao",
         "subtitle": "Modificar Pedido",
         "description": "Copia item e preenche servicos/AUFNR no pedido.",
@@ -88,6 +82,12 @@ APPS = [
         "subtitle": "Criar Pedido por Ordens IW38",
         "description": "Cola ordens, executa IW38, seleciona tudo e abre a criacao de pedido ME21N.",
         "panel": "iw38-me21n-panel.py",
+    },
+    {
+        "title": "ZME62 - Avaliacao",
+        "subtitle": "Avaliacao de Fornecedores em Lote",
+        "description": "Preenche avaliacoes de fornecedores via ZME62 com grupos e combinacoes de respostas.",
+        "panel": "zme62-avaliacao-panel.py",
     },
 ]
 

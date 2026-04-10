@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "transaction": "ME22N",
+  "defaultProfile": "standard",
+  "profiles": {
+    "standard": {
+      "toolbar": {
+        "selectOrder": [
+          "wnd[0]/tbar[1]/btn[17]"
+        ],
+        "orderPopupField": [
+          "wnd[1]/usr/subSUB0:SAPLMEGUI:0003/ctxtMEPO_SELECT-EBELN"
+        ],
+        "orderPopupOk": [
+          "wnd[1]/tbar[0]/btn[0]"
+        ],
+        "save": [
+          "wnd[0]/tbar[0]/btn[11]"
+        ],
+        "editMode": [
+          "wnd[0]/tbar[1]/btn[7]"
+        ]
+      },
+      "tabs": {
+        "servicesTab": [
+          "wnd[0]/usr/subSUB0:SAPLMEGUI:0019/subSUB3:SAPLMEVIEWS:1100/subSUB2:SAPLMEVIEWS:1200/subSUB1:SAPLMEGUI:1301/subSUB2:SAPLMEGUI:1303/tabsITEM_DETAIL/tabpTABIDT1",
+          "wnd[0]/usr/subSUB0:SAPLMEGUI:0015/subSUB3:SAPLMEVIEWS:1100/subSUB2:SAPLMEVIEWS:1200/subSUB1:SAPLMEGUI:1301/subSUB2:SAPLMEGUI:1303/tabsITEM_DETAIL/tabpTABIDT1"
+        ],
+        "taxTab": [
+          "wnd[0]/usr/subSUB0:SAPLMEGUI:0019/subSUB3:SAPLMEVIEWS:1100/subSUB2:SAPLMEVIEWS:1200/subSUB1:SAPLMEGUI:1301/subSUB2:SAPLMEGUI:1303/tabsITEM_DETAIL/tabpTABIDT7",
+          "wnd[0]/usr/subSUB0:SAPLMEGUI:0015/subSUB3:SAPLMEVIEWS:1100/subSUB2:SAPLMEVIEWS:1200/subSUB1:SAPLMEGUI:1301/subSUB2:SAPLMEGUI:1303/tabsITEM_DETAIL/tabpTABIDT7"
+        ]
+      },
+      "fields": {
+        "taxCode": [
+          "wnd[0]/usr/subSUB0:SAPLMEGUI:0019/subSUB3:SAPLMEVIEWS:1100/subSUB2:SAPLMEVIEWS:1200/subSUB1:SAPLMEGUI:1301/subSUB2:SAPLMEGUI:1303/tabsITEM_DETAIL/tabpTABIDT7/ssubTABSTRIPCONTROL1SUB:SAPLMEGUI:1317/ctxtMEPO1317-MWSKZ",
+          "wnd[0]/usr/subSUB0:SAPLMEGUI:0015/subSUB3:SAPLMEVIEWS:1100/subSUB2:SAPLMEVIEWS:1200/subSUB1:SAPLMEGUI:1301/subSUB2:SAPLMEGUI:1303/tabsITEM_DETAIL/tabpTABIDT7/ssubTABSTRIPCONTROL1SUB:SAPLMEGUI:1317/ctxtMEPO1317-MWSKZ"
+        ]
+      },
+      "tables": {
+        "servicesTable": [
+          "wnd[0]/usr/subSUB0:SAPLMEGUI:0019/subSUB3:SAPLMEVIEWS:1100/subSUB2:SAPLMEVIEWS:1200/subSUB1:SAPLMEGUI:1301/subSUB2:SAPLMEGUI:1303/tabsITEM_DETAIL/tabpTABIDT1/ssubTABSTRIPCONTROL1SUB:SAPLMEGUI:1328/subSUB0:SAPLMLSP:0400/tblSAPLMLSPTC_VIEW",
+          "wnd[0]/usr/subSUB0:SAPLMEGUI:0015/subSUB3:SAPLMEVIEWS:1100/subSUB2:SAPLMEVIEWS:1200/subSUB1:SAPLMEGUI:1301/subSUB2:SAPLMEGUI:1303/tabsITEM_DETAIL/tabpTABIDT1/ssubTABSTRIPCONTROL1SUB:SAPLMEGUI:1328/subSUB0:SAPLMLSP:0400/tblSAPLMLSPTC_VIEW"
+        ],
+        "serviceSrvposTemplate": "/ctxtESLL-SRVPOS[2,{row}]",
+        "serviceExtsrvnoTemplate": "/txtESLL-EXTSRVNO[4,{row}]",
+        "serviceMengeTemplate": "/txtESLL-MENGE[5,{row}]",
+        "serviceTbtvrTemplate": "/txtESLL-TBTWR[7,{row}]",
+        "serviceAufnrTemplate": "/ctxtRM11P-AUFNR[8,{row}]",
+        "itemsTable": [
+          "wnd[0]/usr/subSUB0:SAPLMEGUI:0019/subSUB2:SAPLMEVIEWS:1100/subSUB2:SAPLMEVIEWS:1200/subSUB1:SAPLMEGUI:1211/tblSAPLMEGUITC_1211",
+          "wnd[0]/usr/subSUB0:SAPLMEGUI:0015/subSUB2:SAPLMEVIEWS:1100/subSUB2:SAPLMEVIEWS:1200/subSUB1:SAPLMEGUI:1211/tblSAPLMEGUITC_1211"
+        ],
+        "itemEbelpTemplate": "/ctxtMEPO1211-EBELP[1,{row}]",
+        "itemKnttpTemplate": "/ctxtMEPO1211-KNTTP[2,{row}]",
+        "itemEpstpTemplate": "/ctxtMEPO1211-EPSTP[3,{row}]",
+        "itemSelectTemplate": "/txtMEPO1211-TXZ01[5,{row}]",
+        "itemTxz01Template": "/txtMEPO1211-TXZ01[5,{row}]",
+        "itemMengeTemplate": "/txtMEPO1211-MENGE[6,{row}]",
+        "itemMeinsTemplate": "/ctxtMEPO1211-MEINS[7,{row}]",
+        "itemElpeiTemplate": "/ctxtMEPO1211-ELPEI[8,{row}]",
+        "itemEeindTemplate": "/ctxtMEPO1211-EEIND[9,{row}]",
+        "itemNetprTemplate": "/txtMEPO1211-NETPR[10,{row}]",
+        "itemPeinhTemplate": "/txtMEPO1211-PEINH[12,{row}]",
+        "itemBprmeTemplate": "/ctxtMEPO1211-BPRME[13,{row}]",
+        "itemWgbezTemplate": "/ctxtMEPO1211-WGBEZ[14,{row}]",
+        "itemName1Template": "/ctxtMEPO1211-NAME1[15,{row}]"
+      },
+      "popups": {
+        "accountSakto": [
+          "wnd[1]/usr/ctxtESKN-SAKTO"
+        ],
+        "accountOk": [
+          "wnd[1]/tbar[0]/btn[0]",
+          "wnd[1]/tbar[0]/btn[8]"
+        ]
+      }
+    }
+  }
+}
