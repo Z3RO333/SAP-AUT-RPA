@@ -10,6 +10,11 @@
       "buttons": {
         "executar": ["wnd[0]/tbar[1]/btn[2]"],
         "salvar": ["wnd[0]/tbar[0]/btn[11]"],
+        "enviarEmail": ["wnd[0]/tbar[1]/btn[7]"],
+        "confirmarEnvioInicial": ["wnd[1]/usr/btnBUTTON_1"],
+        "confirmarEnvioFinal": ["wnd[1]/tbar[0]/btn[8]"],
+        "verAvaliacoes": ["wnd[0]/tbar[1]/btn[5]"],
+        "verDetalhes": ["wnd[0]/tbar[1]/btn[5]"],
         "comentario": ["wnd[0]/tbar[1]/btn[5]"],
         "salvarComentario": ["wnd[1]/tbar[0]/btn[11]"]
       },
@@ -17,12 +22,37 @@
         "container": ["wnd[0]/usr/cntlGC_CONTAINER_AVALIACAO/shellcont/shell"],
         "responseColumn": "VALOR_OBTIDO"
       },
+      "listGrid": ["wnd[0]/usr/cntlGC_CONTAINER_LISTA/shellcont/shell"],
+      "emailGrid": ["wnd[1]/usr/cntlCC_EMAIL/shellcont/shell"],
       "commentField": ["wnd[1]/usr/cntlCC_TEXTO_COMENTARIO/shellcont/shell"],
       "allowedResponses": [
-        "SIM",
         "SIM, MELHORES CONDIÇÕES",
-        "NAO",
-        "TALVEZ"
+        "SIM, MESMAS CONDIÇÕES",
+        "NÃO",
+        "PARCIALMENTE",
+        "SIM"
+      ],
+      "questionResponses": [
+        [
+          "SIM, MELHORES CONDIÇÕES",
+          "SIM, MESMAS CONDIÇÕES",
+          "NÃO"
+        ],
+        [
+          "NÃO",
+          "PARCIALMENTE",
+          "SIM"
+        ],
+        [
+          "NÃO",
+          "PARCIALMENTE",
+          "SIM"
+        ],
+        [
+          "NÃO",
+          "PARCIALMENTE",
+          "SIM"
+        ]
       ]
     }
   }

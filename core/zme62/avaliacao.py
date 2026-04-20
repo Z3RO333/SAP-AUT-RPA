@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import time
 import unicodedata
 from pathlib import Path
 
@@ -15,7 +16,8 @@ from core.common.sap_actions import first_existing, press, send_vkey, set_text, 
 from core.common.sap_popups import close_popup_ok, dump_popup, popup_exists
 from core.common.sap_session import resolve_session
 from core.common.sap_status import read_statusbar
-from core.common.sap_wait import wait
+from core.common.sap_tables import read_grid_cell
+from core.common.sap_wait import wait, wait_not_busy
 from core.common.screenshots import capture_sap_window
 
 
@@ -31,6 +33,22 @@ def load_zme62_profile(profile_name: str | None = None) -> tuple[str, dict]:
 def allowed_responses(profile_name: str | None = None) -> list[str]:
     _name, profile = load_zme62_profile(profile_name)
     return list(profile.get("allowedResponses", []))
+
+
+def _question_response_options_from_profile(profile: dict) -> list[list[str]]:
+    question_values = profile.get("questionResponses", [])
+    if question_values:
+        return [[str(item) for item in group] for group in question_values]
+
+    allowed = list(profile.get("allowedResponses", []))
+    if not allowed:
+        return []
+    return [allowed[:] for _ in range(4)]
+
+
+def question_response_options(profile_name: str | None = None) -> list[list[str]]:
+    _name, profile = load_zme62_profile(profile_name)
+    return _question_response_options_from_profile(profile)
 
 
 # ---------------------------------------------------------------------------
@@ -50,6 +68,162 @@ def validate_responses(respostas: list[str], allowed: list[str]) -> list[str]:
     return [r for r in respostas if normalize_response(r) not in normalized_allowed]
 
 
+def validate_responses_by_question(respostas: list[str], question_options: list[list[str]]) -> list[str]:
+    invalid: list[str] = []
+    for index, resposta in enumerate(respostas):
+        if index >= len(question_options):
+            invalid.append(f"Pergunta {index + 1}: '{resposta}'")
+            continue
+        allowed = {normalize_response(item) for item in question_options[index]}
+        if index == 0:
+            allowed.add("SIM")
+        elif index >= 1:
+            allowed.add("TALVEZ")
+        if normalize_response(resposta) not in allowed:
+            invalid.append(f"Pergunta {index + 1}: '{resposta}'")
+    return invalid
+
+
+def _safe_getattr(obj, name: str, default: str = "") -> str:
+    try:
+        value = getattr(obj, name)
+    except Exception:
+        return default
+    if value is None:
+        return default
+    return str(value)
+
+
+def _press_candidates(
+    session,
+    element_ids: str | list[str],
+    context: RunContext | None = None,
+    *,
+    timeout: float = 4.0,
+) -> str:
+    ids = [str(element_ids)] if isinstance(element_ids, str) else [str(item) for item in element_ids]
+    element, resolved_id = first_existing(session, ids, timeout=timeout)
+    if context:
+        context.track_field(context.last_stage or "sap", resolved_id)
+    element.press()
+    wait_not_busy(session)
+    return resolved_id
+
+
+def _toolbar_buttons_summary(session, toolbar_ids: list[str]) -> list[str]:
+    summaries: list[str] = []
+    for toolbar_id in toolbar_ids:
+        try:
+            toolbar = session.findById(toolbar_id)
+            count = int(_safe_getattr(toolbar.Children, "Count", "0") or "0")
+        except Exception:
+            continue
+        for index in range(count):
+            try:
+                button = toolbar.Children(index)
+            except Exception:
+                continue
+            if _safe_getattr(button, "Type") != "GuiButton":
+                continue
+            button_id = _safe_getattr(button, "Id")
+            label = _safe_getattr(button, "Text") or _safe_getattr(button, "Tooltip") or _safe_getattr(button, "IconName")
+            summaries.append(f"{button_id} [{label}]")
+    return summaries
+
+
+def _find_toolbar_button_by_hints(
+    session,
+    toolbar_ids: list[str],
+    *,
+    hints: list[str],
+    icon_names: list[str] | None = None,
+    timeout: float = 6.0,
+    interval: float = 0.25,
+):
+    normalized_hints = [normalize_response(hint) for hint in hints if str(hint).strip()]
+    normalized_icons = {normalize_response(icon) for icon in (icon_names or []) if str(icon).strip()}
+    deadline = time.monotonic() + max(timeout, 0.0)
+
+    while True:
+        try:
+            wait_not_busy(session, timeout=interval, interval=min(interval, 0.1))
+        except Exception:
+            pass
+
+        for toolbar_id in toolbar_ids:
+            try:
+                toolbar = session.findById(toolbar_id)
+                count = int(_safe_getattr(toolbar.Children, "Count", "0") or "0")
+            except Exception:
+                continue
+
+            for index in range(count):
+                try:
+                    button = toolbar.Children(index)
+                except Exception:
+                    continue
+                if _safe_getattr(button, "Type") != "GuiButton":
+                    continue
+
+                text = _safe_getattr(button, "Text")
+                tooltip = _safe_getattr(button, "Tooltip")
+                icon_name = _safe_getattr(button, "IconName")
+                haystacks = [
+                    normalize_response(text),
+                    normalize_response(tooltip),
+                    normalize_response(_safe_getattr(button, "Id")),
+                ]
+                if any(hint and hint in haystack for hint in normalized_hints for haystack in haystacks):
+                    return button
+                if normalized_icons and normalize_response(icon_name) in normalized_icons:
+                    return button
+
+        if time.monotonic() >= deadline:
+            break
+        wait(interval)
+
+    available_buttons = ", ".join(_toolbar_buttons_summary(session, toolbar_ids)) or "(nenhum botao visivel)"
+    raise RuntimeError(
+        "Nenhum botao compativel encontrado no toolbar. "
+        f"Procurei por {hints} / icones {icon_names or []}. Disponiveis: {available_buttons}"
+    )
+
+
+def _press_email_button(session, profile: dict, context: RunContext) -> str:
+    configured_ids = profile["buttons"].get("enviarEmail", [])
+
+    try:
+        return _press_candidates(session, configured_ids, context=context, timeout=10.0)
+    except Exception as selector_exc:
+        context.warn(
+            "Botao de email nao apareceu pelo seletor configurado. "
+            f"Tentando localizar no toolbar. Motivo: {selector_exc}"
+        )
+
+    try:
+        button = _find_toolbar_button_by_hints(
+            session,
+            ["wnd[0]/tbar[1]"],
+            hints=["Gerar avaliação final", "Enviar por email", "email"],
+            icon_names=["T_MAIL"],
+            timeout=6.0,
+        )
+        button_id = _safe_getattr(button, "Id")
+        if context and button_id:
+            context.track_field(context.last_stage or "sap", button_id)
+        button.press()
+        wait_not_busy(session)
+        return button_id or "toolbar:email"
+    except Exception as toolbar_exc:
+        context.warn(
+            "Botao de email nao foi localizado dinamicamente no toolbar. "
+            f"Tentando atalho F7. Motivo: {toolbar_exc}"
+        )
+
+    send_vkey(session, 7)
+    return "vkey:7"
+
+
 # ---------------------------------------------------------------------------
 # Grid helpers
 # ---------------------------------------------------------------------------
@@ -57,8 +231,8 @@ def validate_responses(respostas: list[str], allowed: list[str]) -> list[str]:
 def _find_editable_rows(grid, column: str, context: RunContext) -> list[int]:
     """
     Detect editable rows in the SAP GridView using a layered fallback strategy:
-      1. GetCellType — non-zero means the cell is interactive/editable
-      2. GetCellChangeable — available on SAP 7.4+
+      1. GetCellType - non-zero means the cell is interactive/editable
+      2. GetCellChangeable - available on SAP 7.4+
       3. If both fail, log a clear warning and return empty list
          (intentionally avoids ModifyCell no-op to prevent marking the document dirty)
     """
@@ -115,14 +289,407 @@ def _find_editable_rows(grid, column: str, context: RunContext) -> list[int]:
     return []
 
 
-def _fill_responses(grid, editable_rows: list[int], respostas: list[str], response_col: str, context: RunContext) -> None:
-    """Fill each editable row with its corresponding response value."""
-    for i, (row, resposta) in enumerate(zip(editable_rows, respostas), start=1):
-        context.log(f"  Resposta {i}/{len(respostas)}: linha {row} -> '{resposta}'")
-        grid.modifyCell(row, response_col, str(resposta))
-        grid.setCurrentCell(row, response_col)
+def _read_grid_int_attr(grid, attr_names: tuple[str, ...], default: int) -> int:
+    for attr_name in attr_names:
+        try:
+            value = getattr(grid, attr_name)
+        except Exception:
+            continue
+        try:
+            return int(value)
+        except Exception:
+            try:
+                return int(str(value).strip())
+            except Exception:
+                continue
+    return default
+
+
+def _set_grid_first_visible_row(grid, row_index: int) -> bool:
+    for attr_name in ("firstVisibleRow", "FirstVisibleRow"):
+        try:
+            setattr(grid, attr_name, int(row_index))
+            return True
+        except Exception:
+            continue
+    return False
+
+
+def _commit_grid_batch(session, grid, row: int, response_col: str, context: RunContext, *, press_count: int) -> None:
+    grid.setCurrentCell(row, response_col)
+    wait(0.2)
+
+    for press_index in range(press_count):
+        context.log(f"  Confirmando grade na linha {row} ({press_index + 1}/{press_count})...")
         grid.pressEnter()
-        wait(0.1)
+        try:
+            wait_not_busy(session, timeout=5.0, interval=0.1)
+        except Exception:
+            pass
+        wait(0.3)
+        if popup_exists(session):
+            context.log("  Popup de informacao detectado apos confirmacao; fechando para continuar.")
+            close_popup_ok(session)
+            wait(0.3)
+
+
+def _verify_responses_written(grid, editable_rows: list[int], respostas: list[str], response_col: str) -> list[tuple[int, str, str]]:
+    mismatches: list[tuple[int, str, str]] = []
+    for row, expected in zip(editable_rows, respostas):
+        actual = read_grid_cell(grid, row, response_col)
+        if normalize_response(actual) != normalize_response(expected):
+            mismatches.append((row, expected, actual))
+    return mismatches
+
+
+def _wait_for_status_message(session, *, timeout: float = 6.0, interval: float = 0.2) -> tuple[str, str]:
+    attempts = max(1, int(timeout / interval))
+    last_text = ""
+    last_type = ""
+
+    for _ in range(attempts):
+        try:
+            wait_not_busy(session, timeout=interval, interval=min(interval, 0.1))
+        except Exception:
+            pass
+
+        if popup_exists(session):
+            close_popup_ok(session)
+            wait(0.2)
+
+        last_text, last_type = read_statusbar(session)
+        if last_text or last_type:
+            return last_text, last_type
+        wait(interval)
+
+    return last_text, last_type
+
+
+def _save_and_confirm(session, profile: dict, fornecedor: str, context: RunContext) -> tuple[str, str]:
+    last_text = ""
+    last_type = ""
+
+    for attempt in range(1, 3):
+        context.log(f"Salvando avaliacao (tentativa {attempt}/2)...")
+        press(session, profile["buttons"]["salvar"], context=context)
+        close_popup_ok(session)
+
+        status_text, status_type = _wait_for_status_message(session)
+        last_text, last_type = status_text, status_type
+
+        if status_type == "E":
+            raise RuntimeError(status_text or f"Falha ao salvar avaliacao do fornecedor {fornecedor}.")
+
+        if status_text or status_type:
+            return status_text, status_type
+
+        if attempt == 1:
+            context.warn("SAP nao confirmou o salvamento na status bar na primeira tentativa. Repetindo o salvar.")
+
+    raise RuntimeError(
+        f"SAP nao confirmou o salvamento da avaliacao do fornecedor {fornecedor}. "
+        "A status bar permaneceu vazia apos duas tentativas."
+    )
+
+
+def _open_evaluation_grid(session, fornecedor: str, ano: str, profile: dict, context: RunContext):
+    # 1. Open ZME62
+    _open_transaction(session, context)
+
+    # 2. Fill header fields
+    context.log(f"Fornecedor: {fornecedor} | Ano: {ano}")
+    set_text(session, profile["fields"]["fornecedor"], fornecedor, context=context)
+    set_text(session, profile["fields"]["ano"], ano, context=context)
+
+    # 3. Execute (load evaluation grid)
+    context.log("Carregando grade de avaliacao...")
+    press(session, profile["buttons"]["executar"], context=context)
+    close_popup_ok(session)
+
+    # 4. Locate grid
+    try:
+        _grid_elem, grid_id = first_existing(session, profile["grid"]["container"])
+    except RuntimeError:
+        raise RuntimeError(
+            f"Grade de avaliacao nao encontrada para o fornecedor {fornecedor}. "
+            "Verifique se a tela ZME62 carregou corretamente."
+        )
+    grid = session.findById(grid_id)
+    context.log(f"Grade localizada: {grid_id}")
+    return grid, grid_id
+
+
+def _open_email_screen(session, fornecedor: str, ano: str, profile: dict, context: RunContext) -> None:
+    context.log("Abrindo tela inicial para gerar avaliacao final...")
+    _open_transaction(session, context)
+    context.log(f"Fornecedor: {fornecedor} | Ano: {ano}")
+    set_text(session, profile["fields"]["fornecedor"], fornecedor, context=context)
+    set_text(session, profile["fields"]["ano"], ano, context=context)
+
+
+def _status_indicates_existing_evaluation(status_text: str) -> bool:
+    normalized = normalize_response(status_text)
+    return "JA EXISTE AVALIACAO" in normalized
+
+
+def _wait_for_status_without_touching_popups(
+    session,
+    *,
+    timeout: float = 1.5,
+    interval: float = 0.2,
+) -> tuple[str, str]:
+    attempts = max(1, int(timeout / interval))
+    last_text = ""
+    last_type = ""
+
+    for _ in range(attempts):
+        try:
+            wait_not_busy(session, timeout=interval, interval=min(interval, 0.1))
+        except Exception:
+            pass
+        if popup_exists(session):
+            return "", ""
+        last_text, last_type = read_statusbar(session)
+        if last_text or last_type:
+            return last_text, last_type
+        wait(interval)
+
+    return last_text, last_type
+
+
+def _send_confirmation_candidates(profile: dict) -> list[str]:
+    candidates: list[str] = []
+    for key in ("confirmarEnvioInicial", "confirmarEnvioFinal"):
+        for candidate in profile.get("buttons", {}).get(key, []):
+            candidate = str(candidate)
+            if candidate not in candidates:
+                candidates.append(candidate)
+    return candidates
+
+
+def _select_all_email_recipients(session, profile: dict, context: RunContext) -> bool:
+    grid_candidates = profile.get("emailGrid", ["wnd[1]/usr/cntlCC_EMAIL/shellcont/shell"])
+
+    try:
+        grid, grid_id = first_existing(session, grid_candidates, timeout=1.5)
+    except Exception:
+        return False
+
+    try:
+        row_count = int(getattr(grid, "RowCount"))
+    except Exception:
+        row_count = 0
+    if row_count <= 0:
+        return False
+
+    context.log(f"Marcando todos os destinatarios do popup de email ({row_count} linha(s))...")
+
+    try:
+        grid.SelectAll()
+        wait(0.2)
+        if context:
+            context.track_field(context.last_stage or "sap", grid_id)
+        return True
+    except Exception as exc:
+        context.warn(f"Falha ao selecionar todos os destinatarios automaticamente: {exc}")
+        return False
+
+
+def _confirm_send_popup(session, profile: dict, context: RunContext, *, timeout: float = 8.0) -> str:
+    candidates = _send_confirmation_candidates(profile)
+    if not candidates:
+        raise RuntimeError("Perfil ZME62 sem botoes de confirmacao do envio.")
+    _select_all_email_recipients(session, profile, context)
+    return _press_candidates(session, candidates, context=context, timeout=timeout)
+
+
+def _select_first_existing_evaluation(session, profile: dict, fornecedor: str, context: RunContext) -> None:
+    buttons = profile.get("buttons", {})
+    view_candidates = buttons.get("verAvaliacoes", ["wnd[0]/tbar[1]/btn[5]"])
+    detail_candidates = buttons.get("verDetalhes", ["wnd[0]/tbar[1]/btn[5]"])
+    list_candidates = profile.get("listGrid", ["wnd[0]/usr/cntlGC_CONTAINER_LISTA/shellcont/shell"])
+
+    context.log("Avaliacao final ja existente; abrindo lista de avaliacoes...")
+    _press_candidates(session, view_candidates, context=context, timeout=8.0)
+
+    try:
+        list_grid, list_grid_id = first_existing(session, list_candidates, timeout=8.0)
+    except Exception as exc:
+        raise RuntimeError(
+            f"Lista de avaliacoes nao encontrada para o fornecedor {fornecedor}: {exc}"
+        ) from exc
+
+    context.log(f"Lista de avaliacoes localizada: {list_grid_id}")
+
+    try:
+        row_count = int(getattr(list_grid, "RowCount"))
+    except Exception as exc:
+        raise RuntimeError(f"Nao foi possivel ler a lista de avaliacoes do fornecedor {fornecedor}: {exc}") from exc
+    if row_count <= 0:
+        raise RuntimeError(f"Nenhuma avaliacao existente foi encontrada para o fornecedor {fornecedor}.")
+
+    selection_applied = False
+    for attr_name, attr_value in (("selectedRows", "0"), ("SelectedRows", "0"), ("currentCellRow", 0), ("CurrentCellRow", 0)):
+        try:
+            setattr(list_grid, attr_name, attr_value)
+            selection_applied = True
+            break
+        except Exception:
+            continue
+    if not selection_applied:
+        raise RuntimeError(f"Nao foi possivel selecionar a primeira avaliacao do fornecedor {fornecedor}.")
+
+    wait(0.3)
+    _press_candidates(session, detail_candidates, context=context, timeout=8.0)
+
+    if popup_exists(session):
+        popup = dump_popup(session) or {}
+        popup_text = json.dumps(popup, ensure_ascii=False)
+        raise RuntimeError(
+            f"Falha ao abrir detalhes da avaliacao existente do fornecedor {fornecedor}: {popup_text}"
+        )
+
+
+def _send_email_from_grid(session, grid, profile: dict, fornecedor: str, context: RunContext) -> tuple[str, str]:
+    context.log("Iniciando envio da avaliacao ao fornecedor...")
+
+    try:
+        _press_email_button(session, profile, context)
+
+        initial_status_text, initial_status_type = _wait_for_status_without_touching_popups(session, timeout=1.5, interval=0.2)
+        if _status_indicates_existing_evaluation(initial_status_text):
+            _select_first_existing_evaluation(session, profile, fornecedor, context)
+            _press_email_button(session, profile, context)
+            _confirm_send_popup(session, profile, context, timeout=8.0)
+        else:
+            _confirm_send_popup(session, profile, context, timeout=8.0)
+            first_status_text, first_status_type = _wait_for_status_without_touching_popups(session, timeout=1.0, interval=0.2)
+            if first_status_type == "S" and first_status_text:
+                return first_status_text, first_status_type
+
+            _press_email_button(session, profile, context)
+            _confirm_send_popup(session, profile, context, timeout=8.0)
+    except Exception as exc:
+        raise RuntimeError(f"Falha ao enviar avaliacao ao fornecedor {fornecedor}: {exc}") from exc
+
+    if grid is not None:
+        try:
+            grid.setCurrentCell(10, profile["grid"]["responseColumn"])
+            wait(0.2)
+        except Exception:
+            pass
+
+    status_text, status_type = _wait_for_status_message(session, timeout=6.0, interval=0.2)
+    if status_type == "E":
+        raise RuntimeError(status_text or f"Falha ao enviar avaliacao ao fornecedor {fornecedor}.")
+
+    return status_text, status_type
+
+
+def _translate_response_for_row(answer_index: int, resposta: str, question_options: list[list[str]]) -> str:
+    """
+    Translate the chosen value to the text the SAP grid actually persists.
+
+    The panel now exposes the real per-question options, but we still accept a
+    couple of legacy generic labels for backward compatibility:
+      - question 1: 'SIM' -> 'SIM, MESMAS CONDICOES'
+      - questions 2-4: 'TALVEZ' -> 'PARCIALMENTE'
+
+    The negative option should be sent as the literal 'NAO' value for every
+    question that exposes it in the dropdown.
+    """
+    normalized = normalize_response(resposta)
+    option_map: dict[str, str] = {}
+    if answer_index < len(question_options):
+        option_map = {normalize_response(item): item for item in question_options[answer_index]}
+
+    if answer_index == 0 and normalized == "SIM":
+        normalized = "SIM, MESMAS CONDICOES"
+    elif answer_index >= 1:
+        if normalized == "TALVEZ":
+            normalized = "PARCIALMENTE"
+
+    return option_map.get(normalized, str(resposta))
+
+
+def _fill_responses(
+    session,
+    grid,
+    editable_rows: list[int],
+    respostas: list[str],
+    response_col: str,
+    context: RunContext,
+    *,
+    question_options: list[list[str]],
+) -> None:
+    """
+    Fill each editable row with its corresponding response value.
+
+    The recorded ZME62 VBS uses two phases for the 4-question layout:
+      - writes the first 3 rows
+      - confirms the 3rd row with Enter twice
+      - writes the final row
+      - scrolls and confirms the final row once more before saving
+    """
+    try:
+        grid.setColumnWidth(response_col, 20)
+        wait(0.2)
+    except Exception:
+        pass
+
+    if not editable_rows:
+        return
+
+    translated_respostas = [
+        _translate_response_for_row(index, resposta, question_options)
+        for index, resposta in enumerate(respostas)
+    ]
+    first_batch_rows = editable_rows[:-1] if len(editable_rows) > 1 else editable_rows
+    first_batch_answers = translated_respostas[:-1] if len(translated_respostas) > 1 else translated_respostas
+
+    for index, (row, resposta_original, resposta_sap) in enumerate(zip(first_batch_rows, respostas[:-1], first_batch_answers), start=1):
+        context.log(
+            f"  Resposta {index}/{len(respostas)}: linha {row} -> '{resposta_original}'"
+            + (f" (SAP='{resposta_sap}')" if str(resposta_original) != str(resposta_sap) else "")
+        )
+        if resposta_sap != "":
+            grid.modifyCell(row, response_col, str(resposta_sap))
+            wait(0.3)
+
+    if len(editable_rows) > 1:
+        _commit_grid_batch(session, grid, first_batch_rows[-1], response_col, context, press_count=2)
+
+        last_row = editable_rows[-1]
+        last_answer_original = respostas[-1]
+        last_answer_sap = translated_respostas[-1]
+        context.log(
+            f"  Resposta {len(respostas)}/{len(respostas)}: linha {last_row} -> '{last_answer_original}'"
+            + (f" (SAP='{last_answer_sap}')" if str(last_answer_original) != str(last_answer_sap) else "")
+        )
+        if last_answer_sap != "":
+            grid.modifyCell(last_row, response_col, str(last_answer_sap))
+            wait(0.3)
+
+        new_first_visible_row = max(0, last_row - 22)
+        current_first_visible_row = _read_grid_int_attr(grid, ("firstVisibleRow", "FirstVisibleRow"), 0)
+        if new_first_visible_row != current_first_visible_row:
+            context.log(f"  Rolando grade antes da confirmacao final (firstVisibleRow={new_first_visible_row}).")
+            if _set_grid_first_visible_row(grid, new_first_visible_row):
+                wait(0.3)
+            else:
+                context.warn("Nao foi possivel ajustar firstVisibleRow da grade automaticamente.")
+
+        _commit_grid_batch(session, grid, last_row, response_col, context, press_count=1)
+    else:
+        _commit_grid_batch(session, grid, editable_rows[0], response_col, context, press_count=1)
+
+    mismatches = _verify_responses_written(grid, editable_rows, translated_respostas, response_col)
+    if mismatches:
+        details = "; ".join(
+            f"linha {row}: esperado '{expected}', lido '{actual or '(vazio)'}'"
+            for row, expected, actual in mismatches
+        )
+        raise RuntimeError(f"A grade ZME62 nao confirmou todas as respostas: {details}")
 
 
 # ---------------------------------------------------------------------------
@@ -221,6 +788,7 @@ def _processar_fornecedor(
     fornecedor: str,
     ano: str,
     respostas: list[str],
+    question_options: list[list[str]],
     comentario: str,
     grupo_index: int,
     profile: dict,
@@ -228,30 +796,7 @@ def _processar_fornecedor(
     context: RunContext,
 ) -> dict:
     response_col: str = profile["grid"]["responseColumn"]
-
-    # 1. Open ZME62
-    _open_transaction(session, context)
-
-    # 2. Fill header fields
-    context.log(f"Fornecedor: {fornecedor} | Ano: {ano}")
-    set_text(session, profile["fields"]["fornecedor"], fornecedor, context=context)
-    set_text(session, profile["fields"]["ano"], ano, context=context)
-
-    # 3. Execute (load evaluation grid)
-    context.log("Carregando grade de avaliacao...")
-    press(session, profile["buttons"]["executar"], context=context)
-    close_popup_ok(session)
-
-    # 4. Locate grid
-    try:
-        _grid_elem, grid_id = first_existing(session, profile["grid"]["container"])
-    except RuntimeError:
-        raise RuntimeError(
-            f"Grade de avaliacao nao encontrada para o fornecedor {fornecedor}. "
-            "Verifique se a tela ZME62 carregou corretamente."
-        )
-    grid = session.findById(grid_id)
-    context.log(f"Grade localizada: {grid_id}")
+    grid, _grid_id = _open_evaluation_grid(session, fornecedor, ano, profile, context)
 
     # 5. Detect editable rows
     editable_rows = _find_editable_rows(grid, response_col, context)
@@ -267,17 +812,18 @@ def _processar_fornecedor(
 
     # 7. Fill responses
     context.log(f"Preenchendo {len(respostas)} resposta(s)...")
-    _fill_responses(grid, editable_rows, respostas, response_col, context)
+    _fill_responses(
+        session,
+        grid,
+        editable_rows,
+        respostas,
+        response_col,
+        context,
+        question_options=question_options,
+    )
 
     # 8. Save
-    context.log("Salvando avaliacao...")
-    press(session, profile["buttons"]["salvar"], context=context)
-    close_popup_ok(session)
-
-    status_text, status_type = read_statusbar(session)
-    if status_type == "E":
-        raise RuntimeError(status_text or f"Falha ao salvar avaliacao do fornecedor {fornecedor}.")
-
+    status_text, status_type = _save_and_confirm(session, profile, fornecedor, context)
     context.log(f"Avaliacao salva. Status SAP: [{status_type}] {status_text}")
 
     # 9. Comment (optional, non-blocking)
@@ -300,8 +846,31 @@ def _processar_fornecedor(
     )
 
 
+def _processar_envio_fornecedor(
+    session,
+    *,
+    fornecedor: str,
+    ano: str,
+    grupo_index: int,
+    profile: dict,
+    context: RunContext,
+) -> dict:
+    _open_email_screen(session, fornecedor, ano, profile, context)
+    status_text, status_type = _send_email_from_grid(session, None, profile, fornecedor, context)
+    context.log(f"Envio da avaliacao concluido. Status SAP: [{status_type}] {status_text}")
+
+    return _make_result(
+        fornecedor=fornecedor,
+        grupo_index=grupo_index,
+        ano=ano,
+        success=True,
+        status_bar=status_text,
+        status_bar_type=status_type,
+    )
+
+
 # ---------------------------------------------------------------------------
-# run_job — public entrypoint
+# run_job - public entrypoint
 # ---------------------------------------------------------------------------
 
 def run_job(input_data: dict, options: dict, callbacks: dict) -> RobotResult:
@@ -344,7 +913,7 @@ def run_job(input_data: dict, options: dict, callbacks: dict) -> RobotResult:
 
     try:
         _profile_name, profile = load_zme62_profile(options.get("layout_profile"))
-        allowed = profile.get("allowedResponses", [])
+        question_options = _question_response_options_from_profile(profile)
 
         session, session_meta = resolve_session(
             session_ref=options.get("session_ref"),
@@ -368,8 +937,8 @@ def run_job(input_data: dict, options: dict, callbacks: dict) -> RobotResult:
 
             context.log(f"--- Grupo {grupo_index}: {len(fornecedores)} fornecedor(es), ano {ano} ---")
 
-            # Validate responses against allowed list
-            invalidos = validate_responses(respostas, allowed)
+            # Validate responses against the actual option list of each question
+            invalidos = validate_responses_by_question(respostas, question_options)
             if invalidos:
                 msg = f"Grupo {grupo_index}: resposta(s) invalida(s): {invalidos}. Grupo ignorado."
                 context.error(msg)
@@ -400,6 +969,7 @@ def run_job(input_data: dict, options: dict, callbacks: dict) -> RobotResult:
                         fornecedor=fornecedor,
                         ano=ano,
                         respostas=respostas,
+                        question_options=question_options,
                         comentario=comentario,
                         grupo_index=grupo_index,
                         profile=profile,
@@ -435,6 +1005,121 @@ def run_job(input_data: dict, options: dict, callbacks: dict) -> RobotResult:
 
             if result.status == "cancelled":
                 break
+
+        ok_count = sum(1 for r in results if r.get("success"))
+        fail_count = len(results) - ok_count
+        if fail_count and result.status not in ("cancelled", "error"):
+            result.status = "warning"
+
+        result.business_result = {
+            "results": results,
+            "successCount": ok_count,
+            "failCount": fail_count,
+            "totalItems": len(results),
+        }
+
+    except Exception as exc:
+        result.status = "error"
+        context.error(str(exc))
+    finally:
+        result.errors = context.errors
+        result.messages = [m.to_dict() for m in context.messages]
+        result.artifacts = [a.to_dict() for a in context.artifacts]
+        result.finalize()
+        result_path = output_dir / "result.json"
+        result_path.write_text(json.dumps(result.to_dict(), indent=2, ensure_ascii=False), encoding="utf-8")
+        pythoncom.CoUninitialize()
+
+    return result
+
+
+def run_email_job(input_data: dict, options: dict, callbacks: dict) -> RobotResult:
+    """
+    Send saved ZME62 evaluations to suppliers.
+
+    input_data:
+        items: list of {
+            "fornecedor": str,
+            "ano": str,
+            "grupo": int
+        }
+    """
+    pythoncom.CoInitialize()
+    run_id = timestamp_id()
+    output_dir = ensure_dir(Path(options.get("output_dir") or run_output_dir("ZME62-Avaliacao-Envio", run_id=run_id)))
+    log_path = output_dir / "run.log"
+    logger = ExecutionLogger(log_path, callback=callbacks.get("log"))
+    context = RunContext(
+        logger=logger,
+        progress_callback=callbacks.get("progress"),
+        cancel_callback=callbacks.get("is_cancelled"),
+    )
+    result = RobotResult.new(robot="ZME62-AVALIACAO-ENVIO", run_id=run_id)
+
+    items: list[dict] = input_data.get("items", [])
+    payload_path = output_dir / "payload.json"
+    payload_path.write_text(json.dumps({"items": items}, indent=2, ensure_ascii=False), encoding="utf-8")
+    context.add_artifact(RunArtifact.from_path("payload", payload_path, "payload"))
+
+    total_items = len(items)
+
+    try:
+        _profile_name, profile = load_zme62_profile(options.get("layout_profile"))
+
+        session, session_meta = resolve_session(
+            session_ref=options.get("session_ref"),
+            allow_manual_login=bool(options.get("allow_manual_login", True)),
+            chooser=options.get("session_chooser"),
+        )
+        result.session_meta = session_meta
+
+        results: list[dict] = []
+
+        for item_index, item in enumerate(items, start=1):
+            if context.is_cancelled():
+                result.status = "cancelled"
+                break
+
+            fornecedor = str(item.get("fornecedor", "")).strip()
+            ano = str(item.get("ano", "")).strip()
+            grupo_index = int(item.get("grupo", 0) or 0)
+
+            context.progress("zme62-envio-email", item_index, total_items)
+            context.log(f"Enviando avaliacao do fornecedor {fornecedor} ({item_index}/{total_items})...")
+
+            try:
+                item_result = _processar_envio_fornecedor(
+                    session,
+                    fornecedor=fornecedor,
+                    ano=ano,
+                    grupo_index=grupo_index,
+                    profile=profile,
+                    context=context,
+                )
+                results.append(item_result)
+                context.log(f"Fornecedor {fornecedor}: envio OK")
+            except Exception as exc:
+                error_message = str(exc)
+                context.error(f"Fornecedor {fornecedor}: {error_message}")
+                results.append(_make_result(
+                    fornecedor=fornecedor,
+                    grupo_index=grupo_index,
+                    ano=ano,
+                    success=False,
+                    error=error_message,
+                ))
+                popup = dump_popup(session)
+                if popup:
+                    popup_path = output_dir / f"popup-{fornecedor}.json"
+                    popup_path.write_text(json.dumps(popup, indent=2, ensure_ascii=False), encoding="utf-8")
+                    context.add_artifact(RunArtifact.from_path(f"popup-{fornecedor}", popup_path, "popup_dump"))
+                screenshot_path = output_dir / f"erro-{fornecedor}.png"
+                capture_sap_window(session, screenshot_path)
+                context.add_artifact(RunArtifact.from_path(f"screenshot-{fornecedor}", screenshot_path, "screenshot"))
+                try:
+                    close_popup_ok(session)
+                except Exception:
+                    pass
 
         ok_count = sum(1 for r in results if r.get("success"))
         fail_count = len(results) - ok_count

@@ -8,11 +8,17 @@ from _panel_utils import ensure_repo_root
 ensure_repo_root()
 
 from core.common.session_picker import pick_session
-from core.zme62.avaliacao import allowed_responses, normalize_response, run_job
+from core.zme62.avaliacao import normalize_response, question_response_options, run_email_job, run_job
 
 # Number of evaluation questions shown in the form.
-# The core always accepts a dynamic list — change this constant to add/remove fields.
+# The core accepts a dynamic list; change this constant to add/remove fields.
 NUM_RESPOSTAS = 4
+DEFAULT_QUESTION_OPTIONS = [
+    ["SIM, MELHORES CONDIÇÕES", "SIM, MESMAS CONDIÇÕES", "NÃO"],
+    ["NÃO", "PARCIALMENTE", "SIM"],
+    ["NÃO", "PARCIALMENTE", "SIM"],
+    ["NÃO", "PARCIALMENTE", "SIM"],
+]
 
 
 class Zme62AvaliacaoPanel:
@@ -30,14 +36,20 @@ class Zme62AvaliacaoPanel:
         self._groups: dict[str, dict] = {}
         self._group_counter = 0
 
-        # Load allowed responses from profile, with fallback
-        self._allowed_responses = self._load_allowed_responses()
-        self._normalized_allowed = {normalize_response(r): r for r in self._allowed_responses}
+        # Load response options for each question, with fallback
+        self._question_options = self._load_question_options()
+        self._normalized_question_options = [
+            {normalize_response(item) for item in options}
+            for options in self._question_options
+        ]
 
         # Form variables
         self.ano_var = tk.StringVar()
         self.comentario_var = tk.StringVar()
-        self.response_vars = [tk.StringVar(value=self._allowed_responses[0] if self._allowed_responses else "") for _ in range(NUM_RESPOSTAS)]
+        self.response_vars = [
+            tk.StringVar(value=options[0] if options else "")
+            for options in self._question_options
+        ]
         self.status_var = tk.StringVar(value="Pronto. Configure os grupos e clique em Executar.")
 
         self._build_styles()
@@ -48,11 +60,19 @@ class Zme62AvaliacaoPanel:
     # Profile
     # ------------------------------------------------------------------
 
-    def _load_allowed_responses(self) -> list[str]:
+    def _load_question_options(self) -> list[list[str]]:
         try:
-            return allowed_responses()
+            loaded = question_response_options()
         except Exception:
-            return ["SIM", "SIM, MELHORES CONDIÇÕES", "NAO", "TALVEZ"]
+            loaded = []
+
+        question_options: list[list[str]] = []
+        for index in range(NUM_RESPOSTAS):
+            if index < len(loaded) and loaded[index]:
+                question_options.append([str(item) for item in loaded[index]])
+            else:
+                question_options.append(DEFAULT_QUESTION_OPTIONS[index][:])
+        return question_options
 
     # ------------------------------------------------------------------
     # Styles
@@ -123,6 +143,14 @@ class Zme62AvaliacaoPanel:
             wraplength=750,
             justify="left",
         ).pack(anchor="w", pady=(0, 6))
+        ttk.Label(
+            respostas_frame,
+            text="Pergunta 1: SIM, MELHORES CONDIÇÕES / SIM, MESMAS CONDIÇÕES / NÃO. "
+            "Perguntas 2-4: NÃO / PARCIALMENTE / SIM.",
+            style="Muted.TLabel",
+            wraplength=750,
+            justify="left",
+        ).pack(anchor="w", pady=(0, 8))
 
         combos_frame = ttk.Frame(respostas_frame, style="Card.TFrame")
         combos_frame.pack(fill="x")
@@ -133,7 +161,7 @@ class Zme62AvaliacaoPanel:
             cb = ttk.Combobox(
                 col_frame,
                 textvariable=var,
-                values=self._allowed_responses,
+                values=self._question_options[i],
                 state="readonly",
                 width=26,
             )
@@ -251,11 +279,19 @@ class Zme62AvaliacaoPanel:
             messagebox.showwarning("Validacao", f"Selecione a resposta para a(s) pergunta(s): {empty_respostas}.", parent=self.root)
             return
 
-        invalidos = [r for r in respostas if normalize_response(r) not in self._normalized_allowed]
+        invalidos = []
+        for index, resposta in enumerate(respostas):
+            allowed = self._normalized_question_options[index] if index < len(self._normalized_question_options) else set()
+            if normalize_response(resposta) not in allowed:
+                invalidos.append(f"Pergunta {index + 1}: '{resposta}'")
         if invalidos:
+            valores_por_pergunta = "\n".join(
+                f"Pergunta {index + 1}: {', '.join(options)}"
+                for index, options in enumerate(self._question_options)
+            )
             messagebox.showwarning(
                 "Validacao",
-                f"Resposta(s) invalida(s): {invalidos}\nValores permitidos: {self._allowed_responses}",
+                f"Resposta(s) invalida(s): {invalidos}\n\nValores permitidos:\n{valores_por_pergunta}",
                 parent=self.root,
             )
             return
@@ -337,6 +373,21 @@ class Zme62AvaliacaoPanel:
             groups.append(group)
         return {"groups": groups}
 
+    def _build_email_items(self, run_payload: dict) -> list[dict]:
+        biz = run_payload.get("business_result", {})
+        items = []
+        for item in biz.get("results", []):
+            if not item.get("success"):
+                continue
+            items.append(
+                {
+                    "fornecedor": str(item.get("fornecedor", "")).strip(),
+                    "ano": str(item.get("ano", "")).strip(),
+                    "grupo": int(item.get("grupo", 0) or 0),
+                }
+            )
+        return items
+
     def _start_execution(self) -> None:
         if self.is_running:
             return
@@ -351,6 +402,14 @@ class Zme62AvaliacaoPanel:
         self.execute_button.config(state="disabled")
         self.status_var.set(f"Executando... {total} fornecedor(es) a processar.")
         threading.Thread(target=self._run, args=(input_data,), daemon=True).start()
+
+    def _start_email_execution(self, items: list[dict], session_ref: str) -> None:
+        if not items:
+            return
+        self.is_running = True
+        self.execute_button.config(state="disabled")
+        self.status_var.set(f"Enviando emails... 0/{len(items)}")
+        threading.Thread(target=self._run_email_stage, args=(items, session_ref), daemon=True).start()
 
     def _run(self, input_data: dict) -> None:
         try:
@@ -371,6 +430,26 @@ class Zme62AvaliacaoPanel:
         except Exception as exc:
             self.result_queue.put(("error", str(exc)))
 
+    def _run_email_stage(self, items: list[dict], session_ref: str) -> None:
+        try:
+            result = run_email_job(
+                {"items": items},
+                {
+                    "allow_manual_login": True,
+                    "interactive": True,
+                    "session_ref": session_ref or None,
+                    "session_chooser": lambda sessions: pick_session(sessions, self.root),
+                },
+                {
+                    "log": lambda msg: self.result_queue.put(("log", msg)),
+                    "progress": lambda stage, cur, tot: self.result_queue.put(("email_progress", (stage, cur, tot))),
+                    "is_cancelled": lambda: False,
+                },
+            )
+            self.result_queue.put(("email_success", result.to_dict()))
+        except Exception as exc:
+            self.result_queue.put(("email_error", str(exc)))
+
     # ------------------------------------------------------------------
     # Queue polling
     # ------------------------------------------------------------------
@@ -386,17 +465,55 @@ class Zme62AvaliacaoPanel:
                     _stage, current, total = payload
                     self.status_var.set(f"Executando... {current}/{total}")
                     continue
+                if status == "email_progress":
+                    _stage, current, total = payload
+                    self.status_var.set(f"Enviando emails... {current}/{total}")
+                    continue
                 self.is_running = False
                 self.execute_button.config(state="normal")
                 if status == "error":
                     self.status_var.set(f"Falha: {payload}")
                     messagebox.showerror("Falha no robo ZME62", str(payload), parent=self.root)
                     continue
+                if status == "email_error":
+                    self.status_var.set(f"Falha no envio: {payload}")
+                    messagebox.showerror("Falha no envio de emails ZME62", str(payload), parent=self.root)
+                    continue
+                if status == "email_success":
+                    biz = payload.get("business_result", {})
+                    ok = biz.get("successCount", 0)
+                    fail = biz.get("failCount", 0)
+                    total_items = biz.get("totalItems", 0)
+                    self.status_var.set(f"Envio concluido. {total_items} processado(s) | Sucesso: {ok} | Falha: {fail}")
+                    if fail:
+                        messagebox.showwarning(
+                            "Envio concluido com falhas",
+                            f"{ok} fornecedor(es) enviado(s) com sucesso.\n{fail} com falha.\n\nConsulte os logs para detalhes.",
+                            parent=self.root,
+                        )
+                    else:
+                        messagebox.showinfo(
+                            "Envio concluido",
+                            f"{ok} fornecedor(es) enviado(s) com sucesso.",
+                            parent=self.root,
+                        )
+                    continue
                 biz = payload.get("business_result", {})
                 ok = biz.get("successCount", 0)
                 fail = biz.get("failCount", 0)
                 total_items = biz.get("totalItems", 0)
                 self.status_var.set(f"Concluido. {total_items} processado(s) | Sucesso: {ok} | Falha: {fail}")
+                if ok > 0:
+                    ask_message = (
+                        f"Primeira etapa concluida.\n\n"
+                        f"{ok} fornecedor(es) avaliado(s) com sucesso.\n"
+                        f"{fail} com falha.\n\n"
+                        f"Deseja enviar os emails dos {ok} fornecedor(es) salvos agora?"
+                    )
+                    if messagebox.askyesno("Enviar emails ZME62", ask_message, parent=self.root):
+                        session_ref = str(payload.get("session_meta", {}).get("session_ref", "") or "")
+                        self._start_email_execution(self._build_email_items(payload), session_ref)
+                        continue
                 if fail:
                     messagebox.showwarning(
                         "Execucao concluida com falhas",
