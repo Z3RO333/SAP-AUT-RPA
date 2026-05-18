@@ -7,12 +7,11 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 from tkinter import messagebox, ttk
 
-from _panel_utils import ensure_repo_root, open_path
+from _panel_utils import ensure_repo_root, open_path, pick_session_thread_safe
 
 ensure_repo_root()
 
 from core.common.runtime import ensure_dir, run_output_dir
-from core.common.session_picker import pick_session
 from core.common.sap_session import resolve_session
 from core.reports.common import export_dataframe_excel, export_dataframe_pdf
 from core.reports.iw38 import executar_iw38
@@ -172,7 +171,10 @@ class Iw38Panel:
             log_path = output_dir / "run.log"
             with log_path.open("a", encoding="utf-8") as stream:
                 stream.write(f"{datetime.now().isoformat(timespec='seconds')} [INFO] Iniciando IW38 local.\n")
-            session, _session_meta = resolve_session(allow_manual_login=True, chooser=lambda sessions: pick_session(sessions, self.root))
+            session, _session_meta = resolve_session(
+                allow_manual_login=True,
+                chooser=lambda sessions: pick_session_thread_safe(self.root, sessions),
+            )
             df = executar_iw38(session, code=code, date_from=date_from, date_to=date_to, callback_log=lambda msg: self.result_queue.put(("log", msg)))
             if df.empty:
                 self.result_queue.put(("error", "Nenhuma ordem valida foi retornada pelo SAP."))

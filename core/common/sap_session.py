@@ -80,8 +80,19 @@ def sap_application():
     try:
         sap_gui_auto = win32com.client.GetObject("SAPGUI")
     except Exception as exc:
-        raise NoSapSessionError(f"Nao foi possivel anexar ao SAP GUI: {exc}") from exc
-    return sap_gui_auto.GetScriptingEngine
+        raise NoSapSessionError(
+            "Nao foi possivel anexar ao SAP GUI. "
+            "Abra o SAP Logon/SAP GUI e confirme se o SAP GUI Scripting esta habilitado. "
+            f"Detalhe tecnico: {exc}"
+        ) from exc
+    try:
+        return sap_gui_auto.GetScriptingEngine
+    except Exception as exc:
+        raise NoSapSessionError(
+            "SAP GUI encontrado, mas o scripting nao esta acessivel. "
+            "Habilite o SAP GUI Scripting no SAP GUI e no servidor, ou peça ao TI para liberar. "
+            f"Detalhe tecnico: {exc}"
+        ) from exc
 
 
 def list_sessions() -> list[dict]:
@@ -166,7 +177,21 @@ def wait_for_any_session(timeout: float = 60.0, interval: float = 1.0):
         except Exception as exc:
             last_error = exc
         time.sleep(interval)
-    raise NoSapSessionError(f"Login no SAP nao concluiu a tempo. Ultimo erro: {last_error}")
+    detail = f" Ultimo erro: {last_error}" if last_error else ""
+    raise NoSapSessionError(
+        "Nenhuma sessao SAP logada foi encontrada. "
+        "Abra uma janela do SAP ja logada antes de executar o robo."
+        f"{detail}"
+    )
+
+
+def _open_or_wait_for_manual_session() -> list[dict]:
+    try:
+        open_sap_logon()
+    except Exception:
+        # SAP Logon pode ja estar aberto; ainda vale aguardar uma sessao utilizavel.
+        pass
+    return wait_for_any_session()
 
 
 def resolve_session(session_ref: str | None = None, allow_manual_login: bool = True, chooser=None):
@@ -179,19 +204,29 @@ def resolve_session(session_ref: str | None = None, allow_manual_login: bool = T
         if sap_server:
             sessions = auto_connect_to_server(sap_server)
         else:
-            open_sap_logon()
-            sessions = wait_for_any_session()
+            sessions = _open_or_wait_for_manual_session()
 
     if session_ref:
-        return get_session_by_ref(session_ref), next(item for item in sessions if item["session_ref"] == session_ref)
+        try:
+            session_info = next(item for item in sessions if item["session_ref"] == session_ref)
+        except StopIteration as exc:
+            raise NoSapSessionError(
+                f"A sessao SAP usada na etapa anterior ({session_ref}) nao esta mais disponivel. "
+                "Mantenha a janela SAP aberta ate terminar o envio."
+            ) from exc
+        return get_session_by_ref(session_ref), session_info
 
     if not sessions:
         if allow_manual_login:
             sap_server = _get_sap_server_env()
             if sap_server:
                 sessions = auto_connect_to_server(sap_server)
+            else:
+                sessions = _open_or_wait_for_manual_session()
         if not sessions:
-            raise NoSapSessionError("Nenhuma sessao SAP disponivel.")
+            raise NoSapSessionError(
+                "Nenhuma sessao SAP disponivel. Abra uma janela SAP ja logada e tente novamente."
+            )
     if len(sessions) == 1:
         info = sessions[0]
         return get_session_by_ref(info["session_ref"]), info
@@ -201,4 +236,3 @@ def resolve_session(session_ref: str | None = None, allow_manual_login: bool = T
     if not chosen_ref:
         raise NoSapSessionError("Selecao de sessao cancelada.")
     return get_session_by_ref(chosen_ref), next(item for item in sessions if item["session_ref"] == chosen_ref)
-

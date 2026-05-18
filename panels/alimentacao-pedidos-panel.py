@@ -3,11 +3,10 @@ import threading
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 
-from _panel_utils import ensure_repo_root
+from _panel_utils import ensure_repo_root, pick_session_thread_safe, result_failure_message
 
 ensure_repo_root()
 
-from core.common.session_picker import pick_session
 from core.me23n.alimentacao import (
     load_lots_from_excel,
     load_me22n_from_excel,
@@ -327,7 +326,7 @@ class AlimentacaoPedidosPanel:
                 {
                     "allow_manual_login": True,
                     "interactive": True,
-                    "session_chooser": lambda sessions: pick_session(sessions, self.root),
+                    "session_chooser": lambda sessions: pick_session_thread_safe(self.root, sessions),
                 },
                 {
                     "log": lambda msg: self.result_queue.put(("log", msg)),
@@ -459,7 +458,7 @@ class AlimentacaoPedidosPanel:
                 {
                     "allow_manual_login": True,
                     "interactive": True,
-                    "session_chooser": lambda sessions: pick_session(sessions, self.root),
+                    "session_chooser": lambda sessions: pick_session_thread_safe(self.root, sessions),
                 },
                 {
                     "log": lambda msg: self.result_queue.put(("log", msg)),
@@ -493,6 +492,11 @@ class AlimentacaoPedidosPanel:
                 if status == "error":
                     self.status_var.set(f"Falha: {payload}")
                     messagebox.showerror("Falha no robo", str(payload))
+                    continue
+                failure_message = result_failure_message(payload)
+                if failure_message:
+                    self.status_var.set(f"Falha: {failure_message}")
+                    messagebox.showerror("Falha no robo", failure_message)
                     continue
                 results = payload.get("business_result", {}).get("results", [])
                 ok = sum(1 for item in results if item.get("success"))

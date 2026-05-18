@@ -5,11 +5,10 @@ from tkinter import filedialog, messagebox, ttk
 
 import pandas as pd
 
-from _panel_utils import ensure_repo_root
+from _panel_utils import ensure_repo_root, pick_session_thread_safe, result_failure_message
 
 ensure_repo_root()
 
-from core.common.session_picker import pick_session
 from core.iw32.categorias import configured_category_names, normalize_category_name, run_job
 from core.iw32.categorias_input import TIPO_CATEGORIA_MAP, parse_group_orders, parse_manual_rows, tipo_para_categoria
 
@@ -422,7 +421,7 @@ class Iw32CategoriasPanel:
                 {
                     "allow_manual_login": True,
                     "interactive": True,
-                    "session_chooser": lambda sessions: pick_session(sessions, self.root),
+                    "session_chooser": lambda sessions: pick_session_thread_safe(self.root, sessions),
                 },
                 {
                     "log": lambda message: self.result_queue.put(("log", message)),
@@ -450,6 +449,11 @@ class Iw32CategoriasPanel:
                 if status == "error":
                     self.status_var.set(f"Falha: {payload}")
                     messagebox.showerror("Falha no robo IW32 Categorias", str(payload))
+                    continue
+                failure_message = result_failure_message(payload)
+                if failure_message:
+                    self.status_var.set(f"Falha: {failure_message}")
+                    messagebox.showerror("Falha no robo IW32 Categorias", failure_message)
                     continue
                 results = payload.get("business_result", {}).get("results", [])
                 items = self.tree.get_children()

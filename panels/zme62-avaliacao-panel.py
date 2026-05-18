@@ -3,11 +3,10 @@ import threading
 import tkinter as tk
 from tkinter import messagebox, ttk
 
-from _panel_utils import ensure_repo_root
+from _panel_utils import ensure_repo_root, pick_session_thread_safe
 
 ensure_repo_root()
 
-from core.common.session_picker import pick_session
 from core.zme62.avaliacao import normalize_response, question_response_options, run_email_job, run_job
 
 # Number of evaluation questions shown in the form.
@@ -19,6 +18,19 @@ DEFAULT_QUESTION_OPTIONS = [
     ["NÃO", "PARCIALMENTE", "SIM"],
     ["NÃO", "PARCIALMENTE", "SIM"],
 ]
+
+
+def _result_failure_message(payload: dict) -> str:
+    result_status = str(payload.get("status", "") or "")
+    if result_status not in ("error", "cancelled"):
+        return ""
+
+    errors = [str(item) for item in payload.get("errors", []) if str(item).strip()]
+    if errors:
+        return "\n".join(errors[:5])
+    if result_status == "cancelled":
+        return "Execucao cancelada antes de concluir o processamento."
+    return "O robo terminou com erro antes de processar os fornecedores."
 
 
 class Zme62AvaliacaoPanel:
@@ -418,7 +430,7 @@ class Zme62AvaliacaoPanel:
                 {
                     "allow_manual_login": True,
                     "interactive": True,
-                    "session_chooser": lambda sessions: pick_session(sessions, self.root),
+                    "session_chooser": lambda sessions: pick_session_thread_safe(self.root, sessions),
                 },
                 {
                     "log": lambda msg: self.result_queue.put(("log", msg)),
@@ -438,7 +450,7 @@ class Zme62AvaliacaoPanel:
                     "allow_manual_login": True,
                     "interactive": True,
                     "session_ref": session_ref or None,
-                    "session_chooser": lambda sessions: pick_session(sessions, self.root),
+                    "session_chooser": lambda sessions: pick_session_thread_safe(self.root, sessions),
                 },
                 {
                     "log": lambda msg: self.result_queue.put(("log", msg)),
@@ -480,6 +492,12 @@ class Zme62AvaliacaoPanel:
                     messagebox.showerror("Falha no envio de emails ZME62", str(payload), parent=self.root)
                     continue
                 if status == "email_success":
+                    failure_message = _result_failure_message(payload)
+                    if failure_message:
+                        self.status_var.set(f"Falha no envio: {failure_message}")
+                        messagebox.showerror("Falha no envio de emails ZME62", failure_message, parent=self.root)
+                        continue
+
                     biz = payload.get("business_result", {})
                     ok = biz.get("successCount", 0)
                     fail = biz.get("failCount", 0)
@@ -498,6 +516,12 @@ class Zme62AvaliacaoPanel:
                             parent=self.root,
                         )
                     continue
+                failure_message = _result_failure_message(payload)
+                if failure_message:
+                    self.status_var.set(f"Falha: {failure_message}")
+                    messagebox.showerror("Falha no robo ZME62", failure_message, parent=self.root)
+                    continue
+
                 biz = payload.get("business_result", {})
                 ok = biz.get("successCount", 0)
                 fail = biz.get("failCount", 0)

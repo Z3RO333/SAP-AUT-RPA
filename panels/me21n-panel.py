@@ -7,7 +7,7 @@ from datetime import datetime
 from pathlib import Path
 from tkinter import filedialog, messagebox, scrolledtext, ttk
 
-from _panel_utils import ensure_repo_root
+from _panel_utils import ensure_repo_root, result_failure_message
 
 ensure_repo_root()
 
@@ -1510,6 +1510,13 @@ class Me21nPanel:
                     self._set_last_po_number(None)
                     self.status_var.set(f"Falha: {payload}")
                     messagebox.showerror("Falha no robo ME21N", str(payload))
+                    continue
+                failure_message = result_failure_message(payload)
+                if failure_message:
+                    self._set_last_po_number(None)
+                    self._set_summary(json.dumps(payload, indent=2, ensure_ascii=False))
+                    self.status_var.set(f"Falha: {failure_message}")
+                    messagebox.showerror("Falha no robo ME21N", failure_message)
                     continue
                 self._set_summary(json.dumps(payload, indent=2, ensure_ascii=False))
                 business_result = payload.get("business_result", {})

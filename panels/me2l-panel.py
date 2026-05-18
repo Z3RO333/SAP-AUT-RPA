@@ -5,12 +5,11 @@ from datetime import date, timedelta
 from pathlib import Path
 from tkinter import messagebox, ttk
 
-from _panel_utils import ensure_repo_root, open_path
+from _panel_utils import ensure_repo_root, open_path, pick_session_thread_safe
 
 ensure_repo_root()
 
 from core.common.runtime import ensure_dir, run_output_dir
-from core.common.session_picker import pick_session
 from core.common.sap_session import resolve_session
 from core.reports.common import export_dataframe_excel, export_dataframe_pdf
 from core.reports.me2l import executar_me2l
@@ -102,7 +101,10 @@ class Me2lPanel:
     def _run(self) -> None:
         try:
             output_dir = ensure_dir(run_output_dir("ME2L", business_key=self.fornecedor_var.get().strip()))
-            session, _session_meta = resolve_session(allow_manual_login=True, chooser=lambda sessions: pick_session(sessions, self.root))
+            session, _session_meta = resolve_session(
+                allow_manual_login=True,
+                chooser=lambda sessions: pick_session_thread_safe(self.root, sessions),
+            )
             df = executar_me2l(
                 session,
                 fornecedor=self.fornecedor_var.get().strip(),

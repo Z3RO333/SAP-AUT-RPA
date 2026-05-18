@@ -1,6 +1,6 @@
 import unittest
 from pathlib import Path
-from unittest.mock import call, patch
+from unittest.mock import ANY, call, patch
 
 from core.common.logging import ExecutionLogger
 from core.common.run_context import RunContext
@@ -292,14 +292,16 @@ class Zme62AvaliacaoTests(unittest.TestCase):
         self.assertEqual((status_text, status_type), ("Email enviado com sucesso", "S"))
         self.assertEqual(press_email_mock.call_count, 2)
         select_existing_mock.assert_called_once_with(self.session, profile, "17162", self.context)
-        confirm_popup_mock.assert_called_once_with(self.session, profile, self.context, timeout=8.0)
+        confirm_popup_mock.assert_called_once_with(self.session, profile, self.context, timeout=4.0)
 
+    @patch("core.zme62.avaliacao._email_recipients_grid_exists", return_value=True)
     @patch("core.zme62.avaliacao._press_candidates", return_value="wnd[1]/tbar[0]/btn[8]")
     @patch("core.zme62.avaliacao._select_all_email_recipients", return_value=True)
-    def test_confirm_send_popup_selects_all_recipients_before_confirm(
+    def test_confirm_send_popup_uses_final_button_when_recipient_grid_is_open(
         self,
         select_all_mock,
         press_candidates_mock,
+        _grid_exists_mock,
     ):
         profile = {
             "buttons": {
@@ -314,10 +316,69 @@ class Zme62AvaliacaoTests(unittest.TestCase):
         select_all_mock.assert_called_once_with(self.session, profile, self.context)
         press_candidates_mock.assert_called_once_with(
             self.session,
-            ["wnd[1]/usr/btnBUTTON_1", "wnd[1]/tbar[0]/btn[8]"],
+            ["wnd[1]/tbar[0]/btn[8]"],
             context=self.context,
             timeout=8.0,
         )
+
+    @patch("core.zme62.avaliacao._wait_for_email_recipient_grid", return_value=True)
+    @patch("core.zme62.avaliacao._email_recipients_grid_exists", return_value=False)
+    @patch("core.zme62.avaliacao._press_candidates")
+    @patch("core.zme62.avaliacao._select_all_email_recipients", return_value=True)
+    @patch("core.zme62.avaliacao.wait")
+    def test_confirm_send_popup_advances_initial_popup_then_sends_from_recipient_grid(
+        self,
+        _wait_mock,
+        select_all_mock,
+        press_candidates_mock,
+        _grid_exists_mock,
+        _wait_grid_mock,
+    ):
+        profile = {
+            "buttons": {
+                "confirmarEnvioInicial": ["wnd[1]/usr/btnBUTTON_1"],
+                "confirmarEnvioFinal": ["wnd[1]/tbar[0]/btn[8]"],
+            }
+        }
+        press_candidates_mock.side_effect = ["wnd[1]/usr/btnBUTTON_1", "wnd[1]/tbar[0]/btn[8]"]
+
+        resolved = _confirm_send_popup(self.session, profile, self.context, timeout=8.0)
+
+        self.assertEqual(resolved, "wnd[1]/tbar[0]/btn[8]")
+        select_all_mock.assert_called_once_with(self.session, profile, self.context)
+        self.assertEqual(
+            press_candidates_mock.call_args_list,
+            [
+                call(self.session, ["wnd[1]/usr/btnBUTTON_1"], context=self.context, timeout=8.0),
+                call(self.session, ["wnd[1]/tbar[0]/btn[8]"], context=self.context, timeout=ANY),
+            ],
+        )
+
+    @patch("core.zme62.avaliacao._wait_for_status_message", return_value=("", ""))
+    @patch("core.zme62.avaliacao._confirm_send_popup")
+    @patch("core.zme62.avaliacao._wait_for_status_without_touching_popups")
+    @patch("core.zme62.avaliacao._press_email_button")
+    @patch("core.zme62.avaliacao.wait")
+    def test_send_email_from_grid_requires_sap_status_confirmation(
+        self,
+        _wait_mock,
+        _press_email_mock,
+        wait_without_popup_mock,
+        _confirm_popup_mock,
+        _wait_status_mock,
+    ):
+        profile = {
+            "buttons": {
+                "enviarEmail": ["wnd[0]/tbar[1]/btn[7]"],
+                "confirmarEnvioInicial": ["wnd[1]/usr/btnBUTTON_1"],
+                "confirmarEnvioFinal": ["wnd[1]/tbar[0]/btn[8]"],
+            },
+            "grid": {"responseColumn": "VALOR_OBTIDO"},
+        }
+        wait_without_popup_mock.side_effect = [("", ""), ("", "")]
+
+        with self.assertRaisesRegex(RuntimeError, "SAP nao confirmou o envio"):
+            _send_email_from_grid(self.session, None, profile, "33", self.context)
 
     @patch("core.zme62.avaliacao.send_vkey")
     @patch("core.zme62.avaliacao._find_toolbar_button_by_hints", side_effect=RuntimeError("toolbar sem email"))

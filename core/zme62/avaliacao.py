@@ -189,11 +189,19 @@ def _find_toolbar_button_by_hints(
     )
 
 
-def _press_email_button(session, profile: dict, context: RunContext) -> str:
+def _press_email_button(
+    session,
+    profile: dict,
+    context: RunContext,
+    *,
+    selector_timeout: float = 10.0,
+    toolbar_timeout: float = 6.0,
+    allow_vkey_fallback: bool = True,
+) -> str:
     configured_ids = profile["buttons"].get("enviarEmail", [])
 
     try:
-        return _press_candidates(session, configured_ids, context=context, timeout=10.0)
+        return _press_candidates(session, configured_ids, context=context, timeout=selector_timeout)
     except Exception as selector_exc:
         context.warn(
             "Botao de email nao apareceu pelo seletor configurado. "
@@ -206,7 +214,7 @@ def _press_email_button(session, profile: dict, context: RunContext) -> str:
             ["wnd[0]/tbar[1]"],
             hints=["Gerar avaliação final", "Enviar por email", "email"],
             icon_names=["T_MAIL"],
-            timeout=6.0,
+            timeout=toolbar_timeout,
         )
         button_id = _safe_getattr(button, "Id")
         if context and button_id:
@@ -219,6 +227,9 @@ def _press_email_button(session, profile: dict, context: RunContext) -> str:
             "Botao de email nao foi localizado dinamicamente no toolbar. "
             f"Tentando atalho F7. Motivo: {toolbar_exc}"
         )
+
+    if not allow_vkey_fallback:
+        raise RuntimeError("Nenhuma avaliacao final disponivel para enviar email.")
 
     send_vkey(session, 7)
     return "vkey:7"
@@ -432,6 +443,21 @@ def _status_indicates_existing_evaluation(status_text: str) -> bool:
     return "JA EXISTE AVALIACAO" in normalized
 
 
+def _status_indicates_email_sent(status_text: str) -> bool:
+    normalized = normalize_response(status_text)
+    return "EMAIL ENVIADO" in normalized or "EMAILS ENVIADOS" in normalized
+
+
+def _is_missing_email_evaluation_error(message: str) -> bool:
+    normalized = normalize_response(message)
+    return (
+        "NENHUMA AVALIACAO FINAL DISPONIVEL" in normalized
+        or "BTN[1]/USR/BTNBUTTON_1" in normalized
+        or "BTNBUTTON_1" in normalized
+        or "BOTAO DE EMAIL" in normalized and "NAO FOI LOCALIZADO" in normalized
+    )
+
+
 def _wait_for_status_without_touching_popups(
     session,
     *,
@@ -467,8 +493,24 @@ def _send_confirmation_candidates(profile: dict) -> list[str]:
     return candidates
 
 
+def _button_candidates(profile: dict, key: str) -> list[str]:
+    return [str(candidate) for candidate in profile.get("buttons", {}).get(key, [])]
+
+
+def _email_grid_candidates(profile: dict) -> list[str]:
+    return [str(candidate) for candidate in profile.get("emailGrid", ["wnd[1]/usr/cntlCC_EMAIL/shellcont/shell"])]
+
+
+def _email_recipients_grid_exists(session, profile: dict, *, timeout: float = 0.2) -> bool:
+    try:
+        first_existing(session, _email_grid_candidates(profile), timeout=timeout)
+        return True
+    except Exception:
+        return False
+
+
 def _select_all_email_recipients(session, profile: dict, context: RunContext) -> bool:
-    grid_candidates = profile.get("emailGrid", ["wnd[1]/usr/cntlCC_EMAIL/shellcont/shell"])
+    grid_candidates = _email_grid_candidates(profile)
 
     try:
         grid, grid_id = first_existing(session, grid_candidates, timeout=1.5)
@@ -495,12 +537,78 @@ def _select_all_email_recipients(session, profile: dict, context: RunContext) ->
         return False
 
 
+def _wait_for_email_recipient_grid(session, profile: dict, *, timeout: float = 8.0, interval: float = 0.2) -> bool:
+    deadline = time.monotonic() + max(timeout, 0.0)
+    while True:
+        if _email_recipients_grid_exists(session, profile, timeout=0.1):
+            return True
+        status_text, status_type = read_statusbar(session)
+        if status_type == "E":
+            raise RuntimeError(status_text or "SAP retornou erro antes de abrir os destinatarios do email.")
+        if time.monotonic() >= deadline:
+            return False
+        try:
+            wait_not_busy(session, timeout=interval, interval=min(interval, 0.1))
+        except Exception:
+            pass
+        wait(interval)
+
+
 def _confirm_send_popup(session, profile: dict, context: RunContext, *, timeout: float = 8.0) -> str:
-    candidates = _send_confirmation_candidates(profile)
-    if not candidates:
+    initial_candidates = _button_candidates(profile, "confirmarEnvioInicial")
+    final_candidates = _button_candidates(profile, "confirmarEnvioFinal")
+    if not initial_candidates and not final_candidates:
         raise RuntimeError("Perfil ZME62 sem botoes de confirmacao do envio.")
-    _select_all_email_recipients(session, profile, context)
-    return _press_candidates(session, candidates, context=context, timeout=timeout)
+
+    deadline = time.monotonic() + max(timeout, 0.0)
+
+    if _email_recipients_grid_exists(session, profile, timeout=0.2):
+        context.log("Popup de destinatarios localizado; confirmando envio do email...")
+        _select_all_email_recipients(session, profile, context)
+        return _press_candidates(session, final_candidates or initial_candidates, context=context, timeout=timeout)
+
+    if initial_candidates:
+        context.log("Confirmando popup inicial do envio de email...")
+        initial_id = _press_candidates(session, initial_candidates, context=context, timeout=timeout)
+        wait(0.4)
+
+        remaining = max(0.5, deadline - time.monotonic())
+        if _wait_for_email_recipient_grid(session, profile, timeout=remaining):
+            context.log("Popup de destinatarios localizado; confirmando envio do email...")
+            _select_all_email_recipients(session, profile, context)
+            remaining = max(0.5, deadline - time.monotonic())
+            return _press_candidates(session, final_candidates or initial_candidates, context=context, timeout=remaining)
+
+        status_text, status_type = read_statusbar(session)
+        if status_type == "E":
+            raise RuntimeError(status_text or "SAP retornou erro ao confirmar envio de email.")
+        if status_type == "S" and status_text:
+            return initial_id
+
+    if final_candidates:
+        context.log("Confirmando envio do email...")
+        if _email_recipients_grid_exists(session, profile, timeout=0.2):
+            _select_all_email_recipients(session, profile, context)
+        remaining = max(0.5, deadline - time.monotonic())
+        return _press_candidates(session, final_candidates, context=context, timeout=remaining)
+
+    raise RuntimeError("Popup de destinatarios do email nao abriu e o SAP nao confirmou o envio.")
+
+
+def _wait_for_email_send_status(session, fornecedor: str, *, timeout: float = 12.0, interval: float = 0.25) -> tuple[str, str]:
+    status_text, status_type = _wait_for_status_message(session, timeout=timeout, interval=interval)
+    if status_type == "E":
+        raise RuntimeError(status_text or f"Falha ao enviar avaliacao ao fornecedor {fornecedor}.")
+    if not status_text and not status_type:
+        raise RuntimeError(
+            f"SAP nao confirmou o envio do email do fornecedor {fornecedor}. "
+            "A status bar permaneceu vazia apos a confirmacao."
+        )
+    if status_type == "S" and not _status_indicates_email_sent(status_text):
+        raise RuntimeError(
+            f"SAP confirmou outra etapa, mas nao o envio do email do fornecedor {fornecedor}: {status_text}"
+        )
+    return status_text, status_type
 
 
 def _select_first_existing_evaluation(session, profile: dict, fornecedor: str, context: RunContext) -> None:
@@ -554,21 +662,30 @@ def _send_email_from_grid(session, grid, profile: dict, fornecedor: str, context
     context.log("Iniciando envio da avaliacao ao fornecedor...")
 
     try:
-        _press_email_button(session, profile, context)
+        email_button_options = {}
+        if grid is None:
+            email_button_options = {
+                "selector_timeout": 2.0,
+                "toolbar_timeout": 1.0,
+                "allow_vkey_fallback": False,
+            }
+
+        _press_email_button(session, profile, context, **email_button_options)
 
         initial_status_text, initial_status_type = _wait_for_status_without_touching_popups(session, timeout=1.5, interval=0.2)
         if _status_indicates_existing_evaluation(initial_status_text):
             _select_first_existing_evaluation(session, profile, fornecedor, context)
-            _press_email_button(session, profile, context)
-            _confirm_send_popup(session, profile, context, timeout=8.0)
+            _press_email_button(session, profile, context, **email_button_options)
+            _confirm_send_popup(session, profile, context, timeout=4.0 if grid is None else 8.0)
         else:
-            _confirm_send_popup(session, profile, context, timeout=8.0)
-            first_status_text, first_status_type = _wait_for_status_without_touching_popups(session, timeout=1.0, interval=0.2)
-            if first_status_type == "S" and first_status_text:
+            confirm_timeout = 4.0 if grid is None else 8.0
+            _confirm_send_popup(session, profile, context, timeout=confirm_timeout)
+            first_status_text, first_status_type = _wait_for_status_without_touching_popups(session, timeout=3.0, interval=0.25)
+            if first_status_type == "S" and _status_indicates_email_sent(first_status_text):
                 return first_status_text, first_status_type
 
-            _press_email_button(session, profile, context)
-            _confirm_send_popup(session, profile, context, timeout=8.0)
+            _press_email_button(session, profile, context, **email_button_options)
+            _confirm_send_popup(session, profile, context, timeout=confirm_timeout)
     except Exception as exc:
         raise RuntimeError(f"Falha ao enviar avaliacao ao fornecedor {fornecedor}: {exc}") from exc
 
@@ -579,11 +696,7 @@ def _send_email_from_grid(session, grid, profile: dict, fornecedor: str, context
         except Exception:
             pass
 
-    status_text, status_type = _wait_for_status_message(session, timeout=6.0, interval=0.2)
-    if status_type == "E":
-        raise RuntimeError(status_text or f"Falha ao enviar avaliacao ao fornecedor {fornecedor}.")
-
-    return status_text, status_type
+    return _wait_for_email_send_status(session, fornecedor, timeout=12.0, interval=0.25)
 
 
 def _translate_response_for_row(answer_index: int, resposta: str, question_options: list[list[str]]) -> str:
@@ -1100,7 +1213,12 @@ def run_email_job(input_data: dict, options: dict, callbacks: dict) -> RobotResu
                 context.log(f"Fornecedor {fornecedor}: envio OK")
             except Exception as exc:
                 error_message = str(exc)
-                context.error(f"Fornecedor {fornecedor}: {error_message}")
+                missing_evaluation = _is_missing_email_evaluation_error(error_message)
+                if missing_evaluation:
+                    context.warn(f"Fornecedor {fornecedor}: sem avaliacao final para enviar; pulando.")
+                    error_message = "Sem avaliacao final disponivel para enviar email."
+                else:
+                    context.error(f"Fornecedor {fornecedor}: {error_message}")
                 results.append(_make_result(
                     fornecedor=fornecedor,
                     grupo_index=grupo_index,
@@ -1108,6 +1226,8 @@ def run_email_job(input_data: dict, options: dict, callbacks: dict) -> RobotResu
                     success=False,
                     error=error_message,
                 ))
+                if missing_evaluation:
+                    continue
                 popup = dump_popup(session)
                 if popup:
                     popup_path = output_dir / f"popup-{fornecedor}.json"

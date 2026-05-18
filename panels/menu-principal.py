@@ -89,6 +89,18 @@ APPS = [
         "description": "Preenche avaliacoes de fornecedores via ZME62 com grupos e combinacoes de respostas.",
         "panel": "zme62-avaliacao-panel.py",
     },
+    {
+        "title": "ZME62 - Envio",
+        "subtitle": "Enviar Emails de Avaliacao",
+        "description": "Envia por email avaliacoes finais ja salvas para fornecedores avaliados.",
+        "panel": "zme62-envio-email-panel.py",
+    },
+    {
+        "title": "Diagnostico SAP",
+        "subtitle": "Testar conexao COM com SAP GUI",
+        "description": "Testa cada etapa do COM SAP e gera log no Desktop. Use quando o robo nao reconhece a sessao.",
+        "panel": "diagnostico-sap-panel.py",
+    },
 ]
 
 COLS = 3
@@ -100,7 +112,7 @@ class MenuPrincipal:
         self.root.title("Robos SAP - Menu Principal")
         self.root.configure(bg="#f4f7fb")
         self.root.resizable(True, True)
-        self._child_processes: dict[int, subprocess.Popen[str]] = {}
+        self._child_processes: dict[int, tuple] = {}
 
         self._build_styles()
         self._build_layout()
@@ -194,6 +206,11 @@ class MenuPrincipal:
         env.setdefault("ROBOSSAP_INSTALL_DIR", str(install_dir))
         return actual, env
 
+    def _panel_log_path(self, panel_name: str) -> Path:
+        log_dir = Path.home() / "Documents" / "SAP Robots" / "logs"
+        log_dir.mkdir(parents=True, exist_ok=True)
+        return log_dir / f"{Path(panel_name).stem}.log"
+
     def _open(self, panel_path: Path) -> None:
         python = self._python_executable()
         if python is None:
@@ -208,34 +225,52 @@ class MenuPrincipal:
         else:
             command = [python, str(Path(__file__).resolve()), PANEL_RUN_ARG, panel_path.name]
         try:
+            log_path = self._panel_log_path(panel_path.name)
+            log_handle = log_path.open("a", encoding="utf-8", errors="replace")
+            log_handle.write(
+                f"\n===== {panel_path.name} iniciado em {__import__('datetime').datetime.now().isoformat()} =====\n"
+            )
+            log_handle.flush()
             process = subprocess.Popen(
                 command,
                 cwd=str(Path(sys.executable).parent if getattr(sys, "frozen", False) else Path(__file__).resolve().parent),
                 env=env or None,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
+                stdout=log_handle,
+                stderr=subprocess.STDOUT,
                 text=True,
             )
-            self._child_processes[process.pid] = process
+            self._child_processes[process.pid] = (process, log_handle, log_path)
             self.root.after(900, lambda pid=process.pid, path=panel_path: self._check_panel_process(pid, path))
         except Exception as exc:
             messagebox.showerror("Falha ao abrir", str(exc))
 
     def _check_panel_process(self, pid: int, panel_path: Path) -> None:
-        process = self._child_processes.pop(pid, None)
-        if process is None:
+        entry = self._child_processes.pop(pid, None)
+        if entry is None:
             return
+        process, log_handle, log_path = entry
         if process.poll() is None:
+            self._child_processes[pid] = entry
+            self.root.after(900, lambda: self._check_panel_process(pid, panel_path))
             return
 
-        stdout, stderr = process.communicate()
-        details = (stderr or stdout or "").strip()
-        if not details and process.returncode == 0:
-            details = "O processo do painel encerrou imediatamente sem retornar erro."
-        details = details[-4000:]
+        try:
+            log_handle.flush()
+            log_handle.close()
+        except Exception:
+            pass
+
+        if process.returncode == 0:
+            return
+
+        try:
+            tail = log_path.read_text(encoding="utf-8", errors="replace")[-4000:].strip()
+        except Exception:
+            tail = "(nao foi possivel ler o log)"
+
         messagebox.showerror(
             "Falha ao abrir painel",
-            f"O painel {panel_path.name} fechou logo apos iniciar.\n\nCodigo: {process.returncode}\n\n{details}",
+            f"O painel {panel_path.name} fechou logo apos iniciar.\n\nCodigo: {process.returncode}\n\nLog: {log_path}\n\n{tail}",
         )
 
 
