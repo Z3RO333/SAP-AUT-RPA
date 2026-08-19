@@ -1,86 +1,67 @@
-# Robos SAP
+# SAP Automation / RPA Suite
 
-Aplicativo desktop em `Python + Tkinter + pywin32` para automacoes SAP GUI Scripting com stack unica em Python.
+Aplicação desktop desenvolvida para automatizar rotinas operacionais no SAP GUI, reduzindo atividades repetitivas e aumentando a rastreabilidade das execuções.
 
-## Requisitos
+## Visão geral
 
-- Windows 10 ou 11
-- SAP GUI instalado
-- SAP GUI Scripting habilitado no cliente e no servidor
-- Python 3.12 x86 para desenvolvimento
+O projeto utiliza **Python, Tkinter, pywin32 e SAP GUI Scripting** para automatizar diferentes fluxos de manutenção, compras e consulta dentro do SAP.
 
-## Modulos
+Além da automação em si, a solução foi estruturada com logs, screenshots de falha, tratamento de pop-ups, mapeamento externo de layouts e geração de artefatos de diagnóstico.
 
-- `IW32` Liberar
-- `IW32` Cancelar
-- `IW32` Concluir
-- `IW32` Categorias
-- `IW38`
-- `ME2L`
-- `MB51`
-- `ME23N` Alimentacao
-- `ME21N` Criar Pedido
-- Ferramenta offline de `Ordens em Aberto`
+## Principais automações
 
-## Estrutura
+- `IW32` — liberar, cancelar, concluir e classificar ordens
+- `IW38` — consulta e processamento de ordens
+- `ME2L` — consultas relacionadas a fornecedores
+- `MB51` — movimentações de materiais
+- `ME23N` — alimentação e consulta de pedidos
+- `ME21N` — criação de pedidos
+- Consulta offline de ordens em aberto
 
-- `core/common`: sessao SAP, waits, logs, screenshots, popups, layout maps
-- `core/iw32`, `core/me23n`, `core/me21n`, `core/reports`: logica dos robos
-- `panels`: UI Tkinter
-- `sap/layouts`: mapeamentos externos de IDs
-- `templates`: planilhas modelo
-- `docs`: documentacao operacional
-- `scripts`: build e empacotamento
+## Tecnologias
 
-## Como rodar localmente
+- Python
+- Tkinter
+- pywin32
+- SAP GUI Scripting
+- PyInstaller
+- Inno Setup
+- XLSX / automação baseada em planilhas
 
-```bash
-python panels/menu-principal.py
+## Arquitetura
+
+```text
+core/common      Sessão SAP, waits, logs, screenshots e pop-ups
+core/iw32        Automações relacionadas à IW32
+core/me23n       Fluxos da ME23N
+core/me21n       Criação de pedidos
+core/reports     Relatórios e consultas
+panels           Interface desktop em Tkinter
+sap/layouts      Mapeamentos externos de IDs do SAP
+scripts          Build e empacotamento
+docs             Documentação operacional
 ```
 
-## Build
+## Observabilidade e diagnóstico
 
-```bash
-python scripts/build.py
-python scripts/package.py
-```
-
-O build principal gera um pacote `PyInstaller onedir`. O empacotamento final usa `Inno Setup`.
-
-## Configuracao
-
-O app procura `%AppData%\Robos SAP\config.json`.
-
-Campos padrao:
-
-```json
-{
-  "sapLogonPath": null,
-  "outputRoot": "%USERPROFILE%\\Documents\\SAP Robots\\Saidas",
-  "layoutOverridesDir": "%APPDATA%\\Robos SAP\\layouts",
-  "defaultSessionSelection": "prompt",
-  "diagnosticsEnabled": true
-}
-```
-
-## Saidas
-
-Cada execucao grava artefatos em `%USERPROFILE%\Documents\SAP Robots\Saidas\...`:
+Cada execução pode gerar artefatos como:
 
 - `run.log`
 - `payload.json`
 - `result.json`
-- screenshots em falha
-- `popup_dump.json` quando aplicavel
+- screenshots em caso de falha
+- `popup_dump.json`
+
+Esse modelo facilita auditoria, troubleshooting e evolução das automações.
 
 ## ME21N
 
-O modulo `ME21N` agora tem `Modo Guiado` e `Modo Planilha XLSX`. O fluxo homologado desta entrega cobre pedido de servico com `categoria_item = D` e `categoria_classif = F` ou `K`, incluindo multiplos itens, multiplas linhas de servico, `tax_code` por item e referencia contabil por linha (`ordem` para `F`, `centro_custo` para `K`).
+O módulo de criação de pedidos possui modo guiado e processamento via planilha XLSX, incluindo suporte a múltiplos itens, múltiplas linhas de serviço, classificação contábil e configurações específicas por item.
 
-Defaults editaveis da UI ficam em `%AppData%\\Robos SAP\\me21n.defaults.json`. O profile base entregue esta em `sap/layouts/me21n.json`, mas ainda precisa de homologacao no ambiente SAP alvo.
+## Objetivo técnico
 
-Veja:
+Centralizar automações SAP em uma aplicação reutilizável e estruturada, reduzindo tarefas manuais, padronizando execuções e tornando falhas mais fáceis de identificar e diagnosticar.
 
-- `docs/me21n.md`
-- `docs/layout-maps.md`
-- `docs/troubleshooting.md`
+## Segurança
+
+Credenciais, dados internos, endpoints, parâmetros específicos do ambiente SAP e demais informações corporativas sensíveis não devem ser armazenados neste repositório ou na documentação pública.
